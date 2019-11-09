@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://devying.github.io/2019/11/09/%25E9%25A9%25AC%25E5%2585%258B%25E9%25A3%259E%25E5%2590%2591/</loc>
+    <loc>https://devying.github.io/tags/index.html</loc>
     
-    <lastmod>2019-11-09T09:16:44.847Z</lastmod>
+    <lastmod>2019-11-09T14:33:21.781Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://devying.github.io/about/index.html</loc>
+    
+    <lastmod>2019-11-09T13:26:46.966Z</lastmod>
     
   </url>
   
@@ -16,9 +23,37 @@
   </url>
   
   <url>
-    <loc>https://devying.github.io/2019/11/07/hello-world/</loc>
+    <loc>https://devying.github.io/books/index.html</loc>
     
-    <lastmod>2019-11-09T06:08:52.914Z</lastmod>
+    <lastmod>2019-11-07T10:29:47.429Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://devying.github.io/categories/index.html</loc>
+    
+    <lastmod>2019-11-07T10:29:47.429Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://devying.github.io/repository/index.html</loc>
+    
+    <lastmod>2019-11-07T10:29:47.429Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://devying.github.io/links/index.html</loc>
+    
+    <lastmod>2019-11-07T10:29:47.429Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://devying.github.io/404.html</loc>
+    
+    <lastmod>2019-11-07T10:29:47.428Z</lastmod>
     
   </url>
   
