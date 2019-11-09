@@ -39,9 +39,9 @@
   <link rel="stylesheet" href="/css/style.css">
   
   
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css">
   
   
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
   
 </head>
 
@@ -458,7 +458,7 @@
 <h2 id="关于收费"><a href="#关于收费" class="headerlink" title="关于收费"></a>关于收费</h2><p><strong>马克飞象</strong>为新用户提供 10 天的试用期，试用期过后需要<a href="maxiang.info/vip.html">续费</a>才能继续使用。未购买或者未及时续费，将不能同步新的笔记。之前保存过的笔记依然可以编辑。</p>
 <h2 id="反馈与建议"><a href="#反馈与建议" class="headerlink" title="反馈与建议"></a>反馈与建议</h2><ul>
 <li>微博：<a href="http://weibo.com/u/2788354117" target="_blank" rel="noopener">@马克飞象</a>，<a href="http://weibo.com/ggock" target="_blank" rel="noopener" title="开发者个人账号">@GGock</a></li>
-<li>邮箱：<a href="mailto:&#104;&#x75;&#x73;&#116;&#103;&#x6f;&#99;&#107;&#64;&#x67;&#109;&#x61;&#105;&#108;&#46;&#99;&#x6f;&#x6d;">&#104;&#x75;&#x73;&#116;&#103;&#x6f;&#99;&#107;&#64;&#x67;&#109;&#x61;&#105;&#108;&#46;&#99;&#x6f;&#x6d;</a></li>
+<li>邮箱：<a href="mailto:&#x68;&#x75;&#115;&#116;&#103;&#111;&#99;&#x6b;&#64;&#103;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#x6d;">&#x68;&#x75;&#115;&#116;&#103;&#111;&#99;&#x6b;&#64;&#103;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#x6d;</a></li>
 </ul>
 <hr>
 <p>感谢阅读这份帮助文档。请点击右上角，绑定印象笔记账号，开启全新的记录与分享体验吧。</p>
@@ -505,8 +505,7 @@
     
   <section id="comments">
   	
-      <link rel="stylesheet" href="https://jjeejj.github.io/css/gitment.css">
-<script src="https://jjeejj.github.io/js/gitment.js"></script>
+           
     
   </section>
 
@@ -610,24 +609,23 @@ window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
 
    
     
-<script src="//cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js"></script>
-<script>
-var gitment = new Gitment({
-  // id默认为当前页面url，如果url后带参数或锚点，gitment要重新初始化
-  // https://github.com/imsun/gitment/issues/55
-  // 解决方案：id:window.location.pathname,或者将id设置为当前页面标题
-  id: '欢迎使用马克飞向', 
-  owner: 'Devying', // 可以是你的GitHub用户名，也可以是github id
-  repo: 'devying.github.io',
-  oauth: {
-    client_id: '07d86a73fb760ee24baa',
-    client_secret: '85328a32363409c734f5fd986a0720f3ee9316f3',
-  }
-})
-gitment.render('comments')
-</script>
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '07d86a73fb760ee24baa',
+    clientSecret: '85328a32363409c734f5fd986a0720f3ee9316f3',
+    repo: 'devying.github.io',
+    owner: 'Devying',
+    admin: ['Devying'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
 
-
+      
 
 
 
