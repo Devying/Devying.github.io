@@ -3262,7 +3262,7 @@ body {
   line-height: 1.57143;
   color: #34495e;
   background-color: #fefefe;
-  font: 16px/1.5 -apple-system,BlinkMacSystemFont,Helvetica Neue,PingFang SC,Microsoft YaHei,Source Han Sans SC,Noto Sans CJK SC,WenQuanYi Micro Hei,sans-serif;
+  font: 15px/1.5 -apple-system,BlinkMacSystemFont,Helvetica Neue,PingFang SC,Microsoft YaHei,Source Han Sans SC,Noto Sans CJK SC,WenQuanYi Micro Hei,sans-serif;
   /* color: #252a2d; */
   font-weight: 300;
 }
@@ -5548,7 +5548,7 @@ pre,
 
 code {
   text-shadow: 0 1px #fefefe;
-  padding: 0.2em 0.4em;
+  padding: 0.1em 0.4em;
   margin: 0 0.3em;
   color: #e7717d;
   background: #ffe5e2;
@@ -6083,11 +6083,11 @@ body.no-sidebar .sidebar {
 }
 
 .sidebar-toc.collapse {
-  display: none !important;
+  display: none;
 }
 
 .sidebar-toc.in {
-  display: block !important;
+  display: block;
 }
 
 .tagcloud a {
@@ -8788,7 +8788,7 @@ body.okayNav-loaded {
   }
 
   .sidebar {
-    display: none;
+    display: none !important;
   }
 
   .main {
