@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#34495e000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>golang性能分析工具 | 熠熙轻雷</title>
+  <meta name="description" content="pprof介绍pprof 类似于php的xhprof，在代码运行期间进行CPU、内存等指标采样，拿到采样数据后可以进行分析，还可以绘制成可视化的图，方便排查性能瓶颈。在go语言中使用的是官方提供的两个包runtime&#x2F;pprof和net&#x2F;http&#x2F;pprof，分别用在脚本方式运行的程序和http server方式运行的程序中。 功能 CPU Profiling：CPU 分析，按照一定的频率采集所监">
+<meta name="keywords" content="golang,工具">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang性能分析工具">
+<meta property="og:url" content="https:&#x2F;&#x2F;devying.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;golang%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7&#x2F;index.html">
+<meta property="og:site_name" content="熠熙轻雷">
+<meta property="og:description" content="pprof介绍pprof 类似于php的xhprof，在代码运行期间进行CPU、内存等指标采样，拿到采样数据后可以进行分析，还可以绘制成可视化的图，方便排查性能瓶颈。在go语言中使用的是官方提供的两个包runtime&#x2F;pprof和net&#x2F;http&#x2F;pprof，分别用在脚本方式运行的程序和http server方式运行的程序中。 功能 CPU Profiling：CPU 分析，按照一定的频率采集所监">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-12T06:55:28.764Z">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://devying.github.io/2019/11/08/golang%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="熠熙轻雷" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/Devying" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpeg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">熠熙轻雷</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">后端开发 &amp; 架构设计 &amp; 基础服务</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>后端开发交流!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/golang/">golang</a><span class="category-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag">工具</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/golang/" style="font-size: 14px;">golang</a> <a href="/tags/%E5%B7%A5%E5%85%B7/" style="font-size: 13px;">工具</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2019/11/12/golang%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/11/12/golang%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/" class="title">golang数据类型总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-11T16:23:02.000Z" itemprop="datePublished">2019-11-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2019/11/09/golang%E5%8F%98%E9%87%8F%E5%92%8C%E5%B8%B8%E9%87%8F/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/11/09/golang%E5%8F%98%E9%87%8F%E5%92%8C%E5%B8%B8%E9%87%8F/" class="title">golang变量和常量</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-08T16:23:02.000Z" itemprop="datePublished">2019-11-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2019/11/08/golang%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/11/08/golang%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/" class="title">golang性能分析工具</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-07T16:23:02.000Z" itemprop="datePublished">2019-11-08</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse in" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#pprof"><span class="toc-number">1.</span> <span class="toc-text">pprof</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#介绍"><span class="toc-number">1.1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#功能"><span class="toc-number">1.2.</span> <span class="toc-text">功能</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用方法"><span class="toc-number">1.3.</span> <span class="toc-text">使用方法</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#演示1：分析一个简单的脚本性能。"><span class="toc-number">1.3.1.</span> <span class="toc-text">演示1：分析一个简单的脚本性能。</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#演示2：分析task-center服务CPU概况。"><span class="toc-number">1.3.2.</span> <span class="toc-text">演示2：分析task_center服务CPU概况。</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#演示3：分析task-center服务内存概况。"><span class="toc-number">1.3.3.</span> <span class="toc-text">演示3：分析task_center服务内存概况。</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#trace"><span class="toc-number">2.</span> <span class="toc-text">trace</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#介绍-1"><span class="toc-number">2.1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用方法-1"><span class="toc-number">2.2.</span> <span class="toc-text">使用方法</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#演示1：分析一个简单的脚本trace信息"><span class="toc-number">2.2.1.</span> <span class="toc-text">演示1：分析一个简单的脚本trace信息</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#演示2：分析task-center的trace信息"><span class="toc-number">2.2.2.</span> <span class="toc-text">演示2：分析task_center的trace信息</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#指标含义"><span class="toc-number">2.3.</span> <span class="toc-text">指标含义</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#View-trace"><span class="toc-number">2.3.1.</span> <span class="toc-text">View trace</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Goroutine-analysis"><span class="toc-number">2.3.2.</span> <span class="toc-text">Goroutine analysis</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Network-Sync-Syscall-blocking-profile"><span class="toc-number">2.3.3.</span> <span class="toc-text">Network/Sync/Syscall blocking profile</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Scheduler-latency-profiler"><span class="toc-number">2.3.4.</span> <span class="toc-text">Scheduler latency profiler</span></a></li></ol></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <!-- <link rel="stylesheet"
+      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/atom-one-dark.min.css">
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> -->
+<div class="content">
+  <article id="post-golang性能分析工具" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      golang性能分析工具
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2019/11/08/golang%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/" class="article-date">
+	  <time datetime="2019-11-07T16:23:02.000Z" itemprop="datePublished">2019-11-08</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/golang/">golang</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/golang/" rel="tag">golang</a>, <a class="article-tag-link" href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag">工具</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2019/11/08/golang%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="pprof"><a href="#pprof" class="headerlink" title="pprof"></a>pprof</h3><h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>pprof 类似于php的xhprof，在代码运行期间进行CPU、内存等指标采样，拿到采样数据后可以进行分析，还可以绘制成可视化的图，方便排查性能瓶颈。在go语言中使用的是官方提供的两个包<code>runtime/pprof</code>和<code>net/http/pprof</code>，分别用在脚本方式运行的程序和http server方式运行的程序中。</p>
+<h4 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h4><ul>
+<li>CPU Profiling：CPU 分析，按照一定的频率采集所监听的应用程序 CPU（含寄存器）的使用情况，可确定应用程序在主动消耗 CPU 周期时花费时间的位置</li>
+<li>Memory Profiling：内存分析，在应用程序进行堆分配时记录堆栈跟踪，用于监视当前和历史内存使用情况，以及检查内存泄漏</li>
+<li>Block Profiling：阻塞分析，记录 goroutine 阻塞等待同步（包括定时器通道）的位置</li>
+<li>Mutex Profiling：互斥锁分析，报告互斥锁的竞争情况</li>
+</ul>
+<h4 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h4><h5 id="演示1：分析一个简单的脚本性能。"><a href="#演示1：分析一个简单的脚本性能。" class="headerlink" title="演示1：分析一个简单的脚本性能。"></a>演示1：分析一个简单的脚本性能。</h5><p>由于<code>runtime/pprof</code>包没有封装使用起来不方便，可以使用<code>github.com/pkg/profile</code>替换。<br>操作步骤:</p>
+<ul>
+<li>执行脚本得到分析样本</li>
+<li>使用go tool pprof 命令分析样本 <blockquote>
+<p>go tool pprof [-http=:8080] [binfile] pproffile</p>
+</blockquote>
+</li>
+</ul>
+<h5 id="演示2：分析task-center服务CPU概况。"><a href="#演示2：分析task-center服务CPU概况。" class="headerlink" title="演示2：分析task_center服务CPU概况。"></a>演示2：分析task_center服务CPU概况。</h5><p>操作步骤:</p>
+<ul>
+<li>执行压测命令wrk<blockquote>
+<p>wrk [-t线程数] [-c并发数] [-d压测时间] 接口地址</p>
+</blockquote>
+</li>
+<li>采集样本<blockquote>
+<p>go tool pprof -seconds=3 <a href="http://10.77..39.89:6608/debug/pprof/profile" target="_blank" rel="noopener">http://10.77..39.89:6608/debug/pprof/profile</a><br>注意这个seconds 不要超过http设置的WriteTimeout值。</p>
+</blockquote>
+</li>
+<li>使用go tool pprof 命令分析样本 <blockquote>
+<p>go tool pprof [-http=:8080] [binfile] pprof_file</p>
+</blockquote>
+<h5 id="演示3：分析task-center服务内存概况。"><a href="#演示3：分析task-center服务内存概况。" class="headerlink" title="演示3：分析task_center服务内存概况。"></a>演示3：分析task_center服务内存概况。</h5></li>
+</ul>
+<p>操作步骤:</p>
+<ul>
+<li>执行压测命令wrk<blockquote>
+<p>wrk [-t线程数] [-c并发数] [-d压测时间] 接口地址</p>
+</blockquote>
+</li>
+<li>采集样本<blockquote>
+<p>go tool  pprof  -seconds=3  <a href="http://127.0.0.1:8080/debug/pprof/heap" target="_blank" rel="noopener">http://127.0.0.1:8080/debug/pprof/heap</a><br>默认情况下只分析当前活跃对象使用到的内存 可以追加 <code>-alloc_objects</code>(临时分配内存) <code>-inuse_objects</code>（正在使用的对象分配内存） <code>-alloc_space</code>(自程序运行依赖一共分配了多少内存) <code>-inuse_space</code>(常驻内存)等选项查看相应的内存概况</p>
+</blockquote>
+</li>
+<li>使用go tool pprof 命令分析样本 <blockquote>
+<p>go tool pprof [-http=:8080] [binfile] pprof_file</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="trace"><a href="#trace" class="headerlink" title="trace"></a>trace</h3><h4 id="介绍-1"><a href="#介绍-1" class="headerlink" title="介绍"></a>介绍</h4><p>在引入执行trace程序之前，已经有了pprof内存和CPU分析器，那么为什么它还会被添加到官方的工具链中呢？虽然CPU分析器做了一件很好的工作，告诉你什么函数占用了最多的CPU时间，但它并不能帮助你确定是什么阻止了goroutine运行，或者在可用的OS线程上如何调度goroutines。这正是跟踪器真正起作用的地方。trace设计文档很好地解释了跟踪程序背后的动机以及它是如何被设计和工作的。</p>
+<h4 id="使用方法-1"><a href="#使用方法-1" class="headerlink" title="使用方法"></a>使用方法</h4><h5 id="演示1：分析一个简单的脚本trace信息"><a href="#演示1：分析一个简单的脚本trace信息" class="headerlink" title="演示1：分析一个简单的脚本trace信息"></a>演示1：分析一个简单的脚本trace信息</h5><p>操作步骤:</p>
+<ul>
+<li>执行脚本得到分析样本</li>
+<li>使用go tool trace 命令分析样本 <blockquote>
+<p>go tool trace trace_file</p>
+</blockquote>
+</li>
+</ul>
+<h5 id="演示2：分析task-center的trace信息"><a href="#演示2：分析task-center的trace信息" class="headerlink" title="演示2：分析task_center的trace信息"></a>演示2：分析task_center的trace信息</h5><p>操作步骤:</p>
+<ul>
+<li><p>执行压测命令wrk</p>
+<blockquote>
+<p>wrk [-t线程数] [-c并发数] [-d压测时间] 接口地址</p>
+</blockquote>
+</li>
+<li><p>采集样本</p>
+<blockquote>
+<p>curl <a href="http://127.0.0.1:6608/debug/pprof/trace" target="_blank" rel="noopener">http://127.0.0.1:6608/debug/pprof/trace</a>  &gt; trace.out</p>
+</blockquote>
+</li>
+<li><p>使用go tool pprof 命令分析样本 </p>
+<blockquote>
+<p>go tool trace [-http=addr:port] trace_file</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="指标含义"><a href="#指标含义" class="headerlink" title="指标含义"></a>指标含义</h4><h5 id="View-trace"><a href="#View-trace" class="headerlink" title="View trace"></a>View trace</h5><p>最复杂、最强大和交互式的可视化显示了整个程序执行的时间轴。这个视图显示了在每个虚拟处理器上运行着什么，以及什么是被阻塞等待运行的。</p>
+<h5 id="Goroutine-analysis"><a href="#Goroutine-analysis" class="headerlink" title="Goroutine analysis"></a>Goroutine analysis</h5><p>显示了在整个执行过程中，每种类型的goroutines是如何创建的。在选择一种类型之后就可以看到关于这种类型的goroutine的信息。例如，在试图从mutex获取锁、从网络读取、运行等等每个goroutine被阻塞的时间。</p>
+<h5 id="Network-Sync-Syscall-blocking-profile"><a href="#Network-Sync-Syscall-blocking-profile" class="headerlink" title="Network/Sync/Syscall blocking profile"></a>Network/Sync/Syscall blocking profile</h5><p>这些图表显示了goroutines在这些资源上所花费的时间。它们非常接近pprof上的内存/cpu分析。这是分析锁竞争的最佳选择。</p>
+<h5 id="Scheduler-latency-profiler"><a href="#Scheduler-latency-profiler" class="headerlink" title="Scheduler latency profiler"></a>Scheduler latency profiler</h5><p>为调度器级别的信息提供计时功能，显示调度在哪里最耗费时间。</p>
+<p>###参考</p>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=nok0aYiGiYA" target="_blank" rel="noopener">https://www.youtube.com/watch?v=nok0aYiGiYA</a></li>
+<li><a href="https://artem.krylysov.com/blog/2017/03/13/profiling-and-optimizing-go-web-applications/" target="_blank" rel="noopener">https://artem.krylysov.com/blog/2017/03/13/profiling-and-optimizing-go-web-applications/</a></li>
+<li><a href="https://www.itcodemonkey.com/article/5419.html" target="_blank" rel="noopener">https://www.itcodemonkey.com/article/5419.html</a></li>
+<li><a href="https://making.pusher.com/go-tool-trace/" target="_blank" rel="noopener">https://making.pusher.com/go-tool-trace/</a></li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"bufio"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"io"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">	<span class="string">"strconv"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"github.com/pkg/profile"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	p := profile.Start(profile.CPUProfile,profile.ProfilePath(<span class="string">"./"</span>))</span><br><span class="line">	<span class="keyword">defer</span> p.Stop()</span><br><span class="line">	f, err := os.OpenFile(<span class="string">"/Users/baoying5/Downlosdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfadfasdfasdfasdfasdfads/new.csv"</span>, os.O_RDONLY, os.ModePerm)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> f.Close()</span><br><span class="line">	bfio := bufio.NewReader(f)</span><br><span class="line"></span><br><span class="line">	a := <span class="number">0</span></span><br><span class="line">	b := <span class="number">0</span></span><br><span class="line">	am := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">bool</span>)</span><br><span class="line">	bm := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">bool</span>)</span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		l, _, err := bfio.ReadLine()</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &amp;&amp; err != io.EOF &#123;</span><br><span class="line">			<span class="built_in">panic</span>(err)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> err == io.EOF &#123;</span><br><span class="line">			<span class="keyword">break</span></span><br><span class="line">		&#125;</span><br><span class="line">		uid, err := strconv.Atoi(<span class="keyword">string</span>(l))</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="built_in">panic</span>(err)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> uid &gt; <span class="number">3000232374</span> &#123;</span><br><span class="line">			a++</span><br><span class="line">			am[uid] = <span class="literal">true</span></span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			b++</span><br><span class="line">			bm[uid] = <span class="literal">true</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//println(string(l))</span></span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(a, b)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://devying.github.io/2019/11/08/golang%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/" title="golang性能分析工具" target="_blank" rel="external">https://devying.github.io/2019/11/08/golang%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/Devying" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpeg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/Devying" target="_blank"><span class="text-dark">熠熙轻雷</span><small class="ml-1x">后端开发 &amp; 架构设计 &amp; 基础服务</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2019/11/09/golang%E5%8F%98%E9%87%8F%E5%92%8C%E5%B8%B8%E9%87%8F/" title="golang变量和常量"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn" data-toggle="collapse" href="#collapseToc" aria-expanded="true" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2019 Devying
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '07d86a73fb760ee24baa',
+    clientSecret: '85328a32363409c734f5fd986a0720f3ee9316f3',
+    repo: 'devying.github.io',
+    owner: 'Devying',
+    admin: ['Devying'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>
