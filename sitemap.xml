@@ -2,23 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://devying.github.io/2019/11/12/golang%25E6%2595%25B0%25E6%258D%25AE%25E7%25B1%25BB%25E5%259E%258B%25E6%2580%25BB%25E7%25BB%2593/</loc>
-    
-    <lastmod>2019-11-12T06:55:37.492Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://devying.github.io/2019/11/08/golang%25E6%2580%25A7%25E8%2583%25BD%25E5%2588%2586%25E6%259E%2590%25E5%25B7%25A5%25E5%2585%25B7/</loc>
-    
-    <lastmod>2019-11-12T06:55:28.764Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://devying.github.io/2019/11/09/golang%25E5%258F%2598%25E9%2587%258F%25E5%2592%258C%25E5%25B8%25B8%25E9%2587%258F/</loc>
     
-    <lastmod>2019-11-09T15:04:23.339Z</lastmod>
+    <lastmod>2019-11-12T07:32:08.836Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://devying.github.io/2019/10/12/golang%25E6%2595%25B0%25E6%258D%25AE%25E7%25B1%25BB%25E5%259E%258B%25E6%2580%25BB%25E7%25BB%2593/</loc>
+    
+    <lastmod>2019-11-12T07:31:53.594Z</lastmod>
     
   </url>
   
