@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#34495e000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>golang数据类型总结 | 熠熙轻雷</title>
+  <meta name="description" content="基本类型   类型 长度 默认值 说明    bool 1 false    byte 1 0 uint8   rune 4 0 Unicode Code Point, int32   int, uint 4或8 0 32 或 64 位   int8, uint8 1 0 -128 ~ 127, 0 ~ 255   int16, uint16 2 0 -32768 ~ 32767, 0 ~ 655">
+<meta name="keywords" content="golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang数据类型总结">
+<meta property="og:url" content="https:&#x2F;&#x2F;devying.github.io&#x2F;2019&#x2F;11&#x2F;09&#x2F;golang%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93&#x2F;index.html">
+<meta property="og:site_name" content="熠熙轻雷">
+<meta property="og:description" content="基本类型   类型 长度 默认值 说明    bool 1 false    byte 1 0 uint8   rune 4 0 Unicode Code Point, int32   int, uint 4或8 0 32 或 64 位   int8, uint8 1 0 -128 ~ 127, 0 ~ 255   int16, uint16 2 0 -32768 ~ 32767, 0 ~ 655">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-12T06:54:02.921Z">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://devying.github.io/2019/11/09/golang%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="熠熙轻雷" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/Devying" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpeg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">熠熙轻雷</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">后端开发 &amp; 架构设计 &amp; 基础服务</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>后端开发交流!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/golang/">golang</a><span class="category-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag">工具</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/golang/" style="font-size: 14px;">golang</a> <a href="/tags/%E5%B7%A5%E5%85%B7/" style="font-size: 13px;">工具</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2019/11/09/golang%E5%8F%98%E9%87%8F%E5%92%8C%E5%B8%B8%E9%87%8F/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/11/09/golang%E5%8F%98%E9%87%8F%E5%92%8C%E5%B8%B8%E9%87%8F/" class="title">golang变量和常量</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-08T16:23:02.000Z" itemprop="datePublished">2019-11-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2019/11/09/golang%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/11/09/golang%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/" class="title">golang数据类型总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-08T16:23:02.000Z" itemprop="datePublished">2019-11-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2019/11/09/golang%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2019/11/09/golang%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/" class="title">golang性能分析工具</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-08T16:23:02.000Z" itemprop="datePublished">2019-11-09</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse in" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基本类型"><span class="toc-number">1.</span> <span class="toc-text">基本类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#别名"><span class="toc-number">1.1.</span> <span class="toc-text">别名</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#引用类型"><span class="toc-number">2.</span> <span class="toc-text">引用类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#类型转换"><span class="toc-number">3.</span> <span class="toc-text">类型转换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自定义类型"><span class="toc-number">4.</span> <span class="toc-text">自定义类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#未命名类型"><span class="toc-number">5.</span> <span class="toc-text">未命名类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#指针"><span class="toc-number">6.</span> <span class="toc-text">指针</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#初始化"><span class="toc-number">7.</span> <span class="toc-text">初始化</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <!-- <link rel="stylesheet"
+      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/atom-one-dark.min.css">
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> -->
+<div class="content">
+  <article id="post-golang数据类型总结" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      golang数据类型总结
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2019/11/09/golang%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/" class="article-date">
+	  <time datetime="2019-11-08T16:23:02.000Z" itemprop="datePublished">2019-11-09</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/golang/">golang</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/golang/" rel="tag">golang</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2019/11/09/golang%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="基本类型"><a href="#基本类型" class="headerlink" title="基本类型"></a>基本类型</h2><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>长度</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>bool</td>
+<td>1</td>
+<td>false</td>
+<td></td>
+</tr>
+<tr>
+<td>byte</td>
+<td>1</td>
+<td>0</td>
+<td>uint8</td>
+</tr>
+<tr>
+<td>rune</td>
+<td>4</td>
+<td>0</td>
+<td>Unicode Code Point, int32</td>
+</tr>
+<tr>
+<td>int, uint</td>
+<td>4或8</td>
+<td>0</td>
+<td>32 或 64 位</td>
+</tr>
+<tr>
+<td>int8, uint8</td>
+<td>1</td>
+<td>0</td>
+<td>-128 ~ 127, 0 ~ 255</td>
+</tr>
+<tr>
+<td>int16, uint16</td>
+<td>2</td>
+<td>0</td>
+<td>-32768 ~ 32767, 0 ~ 65535</td>
+</tr>
+<tr>
+<td>int32, uint32</td>
+<td>4</td>
+<td>0</td>
+<td>-21亿~ 21亿, 0 ~ 42亿</td>
+</tr>
+<tr>
+<td>int64, uint64</td>
+<td>8</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>float32</td>
+<td>4</td>
+<td>0.0</td>
+<td></td>
+</tr>
+<tr>
+<td>float64</td>
+<td>8</td>
+<td>0.0</td>
+<td></td>
+</tr>
+<tr>
+<td>complex64</td>
+<td>8</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>complex128</td>
+<td>16</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>uintptr</td>
+<td>4或8</td>
+<td></td>
+<td>⾜足以存储指针的 uint32 或 uint64整数</td>
+</tr>
+<tr>
+<td>array</td>
+<td></td>
+<td></td>
+<td>值类型</td>
+</tr>
+<tr>
+<td>struct</td>
+<td></td>
+<td></td>
+<td>值类型</td>
+</tr>
+<tr>
+<td>string</td>
+<td></td>
+<td>“”</td>
+<td>UTF-8 字符串</td>
+</tr>
+<tr>
+<td>slice</td>
+<td></td>
+<td>nil</td>
+<td>引⽤用类型</td>
+</tr>
+<tr>
+<td>map</td>
+<td></td>
+<td>nil</td>
+<td>引⽤用类型</td>
+</tr>
+<tr>
+<td>channel</td>
+<td></td>
+<td>nil</td>
+<td>引⽤用类型</td>
+</tr>
+<tr>
+<td>interface</td>
+<td></td>
+<td>nil</td>
+<td>接⼝</td>
+</tr>
+<tr>
+<td>function</td>
+<td></td>
+<td>nil</td>
+<td>函数</td>
+</tr>
+</tbody></table>
+<p>支持八进制，十六进制以及科学计数法</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">a</span>,<span class="selector-tag">b</span>,c := <span class="number">100</span>,<span class="number">0144</span>,<span class="number">0</span>x64</span><br><span class="line">fmt.Println(<span class="selector-tag">a</span>,<span class="selector-tag">b</span>,c)  <span class="comment">//100,100,100</span></span><br><span class="line">fmt.Printf(<span class="string">"0b%b,%#o,%#x"</span>,<span class="selector-tag">a</span>,<span class="selector-tag">b</span>,c)<span class="comment">//0b1100100,0144,0x64</span></span><br><span class="line">fmt.Prinln(math<span class="selector-class">.MaxInt8</span>,math,MinInt8)<span class="comment">//127,-128</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//进制转换到十进制</span></span><br><span class="line"><span class="selector-tag">a</span>,_ := strconv.ParseInt(<span class="string">"1100100"</span>,<span class="number">2</span>,<span class="number">32</span>)  <span class="comment">//100</span></span><br><span class="line"><span class="selector-tag">b</span>,_ := strconv.ParseInt(<span class="string">"0144"</span>,<span class="number">8</span>,<span class="number">32</span>)     <span class="comment">//100</span></span><br><span class="line">c,_ := strconv.ParseInt(<span class="string">"0x64"</span>,<span class="number">16</span>,<span class="number">32</span>)    <span class="comment">//100</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//十进制转到其他进制</span></span><br><span class="line">strconv.FormatInt(<span class="selector-tag">a</span>,<span class="number">2</span>)  <span class="comment">//1100100</span></span><br><span class="line">strconv.FormatInt(<span class="selector-tag">a</span>,<span class="number">8</span>)  <span class="comment">//144</span></span><br><span class="line">strconv.FormatInt(<span class="selector-tag">a</span>,<span class="number">16</span>) <span class="comment">//64</span></span><br></pre></td></tr></table></figure>
+<p>注意浮点数 默认浮点类型是<code>float64</code></p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> a float32 = <span class="number">1.123456789</span></span><br><span class="line">	<span class="keyword">var</span> b float32 = <span class="number">1.123456781</span></span><br><span class="line">	<span class="keyword">var</span> <span class="built_in">c</span> float32 = <span class="number">1.12345678</span></span><br><span class="line">	<span class="built_in">println</span>(a, b, <span class="built_in">c</span>)</span><br><span class="line">	<span class="built_in">println</span>(a == b, b == <span class="built_in">c</span>, a == <span class="built_in">c</span>)</span><br><span class="line">	fmt.<span class="type">Printf</span>(<span class="string">"%v,%v,%v"</span>, a, b, <span class="built_in">c</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+<span class="number">1.123457e</span>+<span class="number">000</span> +<span class="number">1.123457e</span>+<span class="number">000</span> +<span class="number">1.123457e</span>+<span class="number">000</span></span><br><span class="line"><span class="literal">true</span> <span class="literal">true</span> <span class="literal">true</span></span><br><span class="line"><span class="number">1.1234568</span>,<span class="number">1.1234568</span>,<span class="number">1.1234568</span></span><br></pre></td></tr></table></figure>
+<h3 id="别名"><a href="#别名" class="headerlink" title="别名"></a>别名</h3><p>byte 是 uint8 别名<br>rune 是 int32 别名<br>别名类型不需要转换可以直接赋值，比如下面这样没有问题。但是注意了，就算你在32操作系统上int 并不等于int32，在64位系统上int 并不等于int64</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">var</span> x <span class="keyword">byte</span> = <span class="number">0x11</span></span><br><span class="line">	<span class="keyword">var</span> y <span class="keyword">uint8</span> = x</span><br><span class="line">	<span class="keyword">var</span> z <span class="keyword">uint8</span> = x + y</span><br><span class="line">	test(z)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">test</span><span class="params">(x <span class="keyword">byte</span>)</span></span> &#123;</span><br><span class="line">	<span class="built_in">println</span>(x)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="引用类型"><a href="#引用类型" class="headerlink" title="引用类型"></a>引用类型</h2><p>特指slice，map，chan 这三类<br>内置函数new按指定类型长度分配零值内存，返回指针，并不关心类型内部构造和初始化方式，而引用类型必须要使用make来创建，编译器会将make转为目标类型专用的创建函数（或指令），以确保全部内存分配和相关属性初始化。</p>
+<h2 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h2><p>不⽀支持隐式类型转换</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">a := <span class="number">10</span></span><br><span class="line">b := <span class="keyword">byte</span>(a)</span><br><span class="line">c := a + <span class="keyword">int</span>(b) <span class="comment">//混合表达式 必须保持类型一致，a自动推断为</span></span><br><span class="line"><span class="keyword">int</span> 所以a + 后面的也必须是<span class="keyword">int</span></span><br><span class="line"><span class="keyword">var</span> n <span class="keyword">int</span> = <span class="keyword">int</span>(b) <span class="comment">// 显式转换</span></span><br><span class="line"><span class="built_in">println</span>(a, b, c) <span class="comment">//10，10，20</span></span><br><span class="line"></span><br><span class="line">d := <span class="keyword">bool</span>(a) <span class="comment">//这里就有问题了</span></span><br></pre></td></tr></table></figure>
+<p>如果转换的目标是<code>指针</code>，<code>单向通道</code>或者是<code>没有返回值的函数</code>,必须要使用括号。避免造成语法分析错误</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">d := (*<span class="keyword">int</span>)(&amp;a)   <span class="comment">//0xc000032780</span></span><br><span class="line">e := (&lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)(ch)</span><br><span class="line">f := (<span class="function"><span class="keyword">func</span><span class="params">()</span>)<span class="params">(x)</span></span></span><br><span class="line">g := <span class="function"><span class="keyword">func</span><span class="params">()</span><span class="title">int</span><span class="params">(x)</span> //有返回值的可以省略括号</span></span><br></pre></td></tr></table></figure>
+<h2 id="自定义类型"><a href="#自定义类型" class="headerlink" title="自定义类型"></a>自定义类型</h2><p>使用关键字<code>type</code>定义，包括基于现有基础类型创建或者是结构体、函数类型等。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> flag <span class="keyword">byte</span></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	read flag = <span class="number">1</span> &lt;&lt; <span class="literal">iota</span></span><br><span class="line">	write</span><br><span class="line">	exec</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	f := read | exec</span><br><span class="line">	fmt.Printf(<span class="string">"%b\n"</span>,f)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//101</span></span><br></pre></td></tr></table></figure>
+<p>和var 、const 类似，多个type定义可以合并成组，可以在函数或者代码块内定义局部类型。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">type</span> (</span><br><span class="line">		user <span class="keyword">struct</span> &#123;             <span class="comment">//结构体类型</span></span><br><span class="line">			name <span class="keyword">string</span></span><br><span class="line">			age <span class="keyword">uint8</span></span><br><span class="line">		&#125;</span><br><span class="line">		event <span class="function"><span class="keyword">func</span><span class="params">(<span class="keyword">string</span>)</span> <span class="title">bool</span>   //函数类型</span></span><br><span class="line">	)</span><br><span class="line">	u := user&#123;<span class="string">"huangby"</span>,<span class="number">30</span>&#125;</span><br><span class="line">	fmt.Println(u)</span><br><span class="line">	<span class="keyword">var</span> f event = <span class="function"><span class="keyword">func</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">		<span class="built_in">println</span>(s)</span><br><span class="line">		<span class="keyword">return</span> s !=<span class="string">""</span></span><br><span class="line">	&#125;</span><br><span class="line">	f(<span class="string">"huangby"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="未命名类型"><a href="#未命名类型" class="headerlink" title="未命名类型"></a>未命名类型</h2><p>与有明确标识符的 bool、int、string 等类型相比，数组、切片、字典、通道等类型与具体类型的长度等属性有关，故称作为命了类型。<br>具有相同声明的未命名类型被视作同一类型。</p>
+<ul>
+<li>具有相同基类型的指针。</li>
+<li>具有相同元素类型和长度的数组 array</li>
+<li>具有相同元素类型的切片 slice</li>
+<li>具有相同键值类型的字典  map</li>
+<li>具有相同数据类型以及操作方向的通道 channel</li>
+<li>具有相同字段序列（字段名、字段类型、标签、字段顺序）的结构体 struct</li>
+<li>具有相同签名(参数和返回值，不包括参数名)的函数 func</li>
+<li>具有相同方法集（方法名，方法签名）的接口 interface{}</li>
+</ul>
+<h2 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h2><p>不能将内存地址与指针混为一谈<br>内存地址是内存中每个字节单元的唯一编号，指针则是一个实体。指针会分配内存空间，相当于一个专门用来保存地址的整形变量。</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">             p := &amp;x             x:=100</span><br><span class="line"><span class="params">------------</span>|<span class="params">-------</span>|<span class="params">----</span>\\<span class="params">----</span>|<span class="params">---------</span>|<span class="params">-----</span></span><br><span class="line">memory.<span class="string">..</span>   |0x1200 |   ····   | 100     |</span><br><span class="line"><span class="params">------------</span>|<span class="params">-------</span>|<span class="params">----</span>\\<span class="params">----</span>|<span class="params">---------</span>|<span class="params">-----</span></span><br><span class="line">addr         0x80              0x1200 </span><br><span class="line"><span class="params">-----------------------------------------------</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>&amp;</code>符号用来获取对象地址</li>
+<li>指针运算符<code>*</code>用于间接引用目标对象</li>
+<li>二级指针 ** T,如包含包名则写成*package T</li>
+</ul>
+<p>并非所有的对象都能进行取地址操作，但变量总是能正确返回。指针运算符为左值时(*a = 20)，可以更新目标对象状态，而为右值时(a := *b)，则是为了获取目标状态。<br>指针支持相等运算，单不支持加减法和类型转换。</p>
+<p>可以通过unsafe.Pointer将指针转换为 uintptr 后加减运算，但可能会造成非法访问。</p>
+<p>Pointer类似于C中的void* 万能指针，可以用来转换指针类型。它能安全持有对象或对象成员，但是 uintptr 不行。uintptr 仅是一种特殊整形，并不引用目标对象，无法阻止垃圾回收器回收对象内存。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">var</span> <span class="selector-tag">a</span>,<span class="selector-tag">b</span>  struct&#123;&#125;</span><br><span class="line"><span class="function"><span class="title">println</span><span class="params">(&amp;a,&amp;b)</span></span>           <span class="comment">//都是0x---------</span></span><br><span class="line"><span class="function"><span class="title">println</span><span class="params">(&amp;a==&amp;b ,&amp;a==nil)</span></span> <span class="comment">//第一个不一定true  但是第二个肯定false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>对复合类型（数组，切片，字典，结构体）变量初始化时，有一些语法限制。</p>
+<ul>
+<li>初始化表达式必须含有类型标签</li>
+<li>左花括号必须在类型尾部，不能另起一行</li>
+<li>多个成员初始值以逗号分隔</li>
+<li>允许多行，但是每行必须以逗号或者右花括号结束。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> data <span class="keyword">struct</span>&#123;</span><br><span class="line">	x <span class="keyword">int</span></span><br><span class="line">	s <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> a data = data&#123;<span class="number">1</span>,<span class="string">"abc"</span>&#125;</span><br><span class="line">b := data&#123;<span class="number">2</span>,<span class="string">"def"</span>&#125;</span><br><span class="line">c := []<span class="keyword">int</span>&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;</span><br><span class="line"><span class="keyword">var</span> d = <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;<span class="string">"name"</span>:<span class="string">"huangby"</span>,<span class="string">"addr"</span>:<span class="string">"beijing"</span>&#125;</span><br><span class="line">d := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;<span class="string">"name"</span>: <span class="string">"huangby"</span>, <span class="string">"addr"</span>: <span class="string">"beijing"</span>&#125;</span><br><span class="line">d[<span class="string">"a"</span>] = <span class="string">"acd"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//但是</span></span><br><span class="line"><span class="keyword">var</span> d <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span></span><br><span class="line">d[<span class="string">"a"</span>] = <span class="string">"acd"</span> 这就不行了</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://devying.github.io/2019/11/09/golang%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/" title="golang数据类型总结" target="_blank" rel="external">https://devying.github.io/2019/11/09/golang%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/Devying" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpeg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/Devying" target="_blank"><span class="text-dark">熠熙轻雷</span><small class="ml-1x">后端开发 &amp; 架构设计 &amp; 基础服务</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2019/11/09/golang%E5%8F%98%E9%87%8F%E5%92%8C%E5%B8%B8%E9%87%8F/" title="golang变量和常量"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2019/11/09/golang%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/" title="golang性能分析工具"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn" data-toggle="collapse" href="#collapseToc" aria-expanded="true" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2019 Devying
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '07d86a73fb760ee24baa',
+    clientSecret: '85328a32363409c734f5fd986a0720f3ee9316f3',
+    repo: 'devying.github.io',
+    owner: 'Devying',
+    admin: ['Devying'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>

@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://devying.github.io/2019/11/09/golang%25E6%2595%25B0%25E6%258D%25AE%25E7%25B1%25BB%25E5%259E%258B%25E6%2580%25BB%25E7%25BB%2593/</loc>
+    
+    <lastmod>2019-11-12T06:54:02.921Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://devying.github.io/2019/11/09/golang%25E6%2580%25A7%25E8%2583%25BD%25E5%2588%2586%25E6%259E%2590%25E5%25B7%25A5%25E5%2585%25B7/</loc>
     
     <lastmod>2019-11-11T07:33:49.306Z</lastmod>
@@ -30,13 +37,6 @@
   </url>
   
   <url>
-    <loc>https://devying.github.io/books/index.html</loc>
-    
-    <lastmod>2019-11-07T10:29:47.429Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://devying.github.io/categories/index.html</loc>
     
     <lastmod>2019-11-07T10:29:47.429Z</lastmod>
@@ -44,14 +44,21 @@
   </url>
   
   <url>
-    <loc>https://devying.github.io/repository/index.html</loc>
+    <loc>https://devying.github.io/links/index.html</loc>
     
     <lastmod>2019-11-07T10:29:47.429Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://devying.github.io/links/index.html</loc>
+    <loc>https://devying.github.io/books/index.html</loc>
+    
+    <lastmod>2019-11-07T10:29:47.429Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://devying.github.io/repository/index.html</loc>
     
     <lastmod>2019-11-07T10:29:47.429Z</lastmod>
     
