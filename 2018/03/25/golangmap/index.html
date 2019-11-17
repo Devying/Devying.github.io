@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#34495e000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>golang map总结 | 熠熙轻雷</title>
+  <meta name="description" content="字典作为无序键值对集合，字典要求val必须是支持相等运算符(==,!=)的数据类型，比如数字、字符串、指针、数组、结构体，以及对应接口类型。访问不存在的键值，默认返回零值，不会引发错误。但是推荐使用ok-idiom模式对字典进行迭代的时候每次返回的键值顺序都是不一样的。字段不支持cap。因内存访问安全和哈希算法等缘故，字段被设计成”not addressable”，故不能直接修改value成员（结">
+<meta name="keywords" content="golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang map总结">
+<meta property="og:url" content="https:&#x2F;&#x2F;devying.github.io&#x2F;2018&#x2F;03&#x2F;25&#x2F;golangmap&#x2F;index.html">
+<meta property="og:site_name" content="熠熙轻雷">
+<meta property="og:description" content="字典作为无序键值对集合，字典要求val必须是支持相等运算符(==,!=)的数据类型，比如数字、字符串、指针、数组、结构体，以及对应接口类型。访问不存在的键值，默认返回零值，不会引发错误。但是推荐使用ok-idiom模式对字典进行迭代的时候每次返回的键值顺序都是不一样的。字段不支持cap。因内存访问安全和哈希算法等缘故，字段被设计成”not addressable”，故不能直接修改value成员（结">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-17T07:13:07.225Z">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://devying.github.io/2018/03/25/golangmap/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="熠熙轻雷" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/Devying" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpeg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">熠熙轻雷</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">后端开发 &amp; 架构设计 &amp; 基础服务</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>后端开发交流!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/golang/">golang</a><span class="category-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a><span class="tag-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/golang/" style="font-size: 13px;">golang</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" class="title">golang 结构体总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-04-18T16:23:02.000Z" itemprop="datePublished">2018-04-19</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/03/25/golangmap/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/03/25/golangmap/" class="title">golang map总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-03-24T16:23:02.000Z" itemprop="datePublished">2018-03-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/03/10/golang%E5%88%87%E7%89%87/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/03/10/golang%E5%88%87%E7%89%87/" class="title">golang切片总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-03-09T16:23:02.000Z" itemprop="datePublished">2018-03-10</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/02/25/golang%E6%95%B0%E7%BB%84/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/02/25/golang%E6%95%B0%E7%BB%84/" class="title">golang数组总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-02-24T16:23:02.000Z" itemprop="datePublished">2018-02-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/02/03/golang%E5%AD%97%E7%AC%A6%E4%B8%B2/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/02/03/golang%E5%AD%97%E7%AC%A6%E4%B8%B2/" class="title">golang字符串总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-02-02T16:23:02.000Z" itemprop="datePublished">2018-02-03</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse in" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#字典"><span class="toc-number">1.</span> <span class="toc-text">字典</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#安全"><span class="toc-number">1.1.</span> <span class="toc-text">安全</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <!-- <link rel="stylesheet"
+      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/atom-one-dark.min.css">
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> -->
+<div class="content">
+  <article id="post-golangmap" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      golang map总结
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2018/03/25/golangmap/" class="article-date">
+	  <time datetime="2018-03-24T16:23:02.000Z" itemprop="datePublished">2018-03-25</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/golang/">golang</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/golang/" rel="tag">golang</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2018/03/25/golangmap/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h2><p>作为无序键值对集合，字典要求val必须是支持相等运算符(==,!=)的数据类型，比如数字、字符串、指针、数组、结构体，以及对应接口类型。<br>访问不存在的键值，默认返回零值，不会引发错误。但是推荐使用ok-idiom模式<br>对字典进行迭代的时候每次返回的键值顺序都是不一样的。字段不支持cap。<br>因内存访问安全和哈希算法等缘故，字段被设计成”not addressable”，故不能直接修改value成员（结构或数组）</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> user <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">	age  <span class="keyword">byte</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	m := <span class="keyword">map</span>[<span class="keyword">int</span>]user&#123;</span><br><span class="line">		<span class="number">1</span>: &#123;<span class="string">"Tom"</span>, <span class="number">19</span>&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//m[1].age++ //错误了cannot assign to struct field m[1].age in map</span></span><br><span class="line">	<span class="comment">//正确的做法如下</span></span><br><span class="line">	u := m[<span class="number">1</span>]</span><br><span class="line">	u.age++</span><br><span class="line">	m[<span class="number">1</span>] = u</span><br><span class="line">	fmt.Println(m) <span class="comment">//map[1:&#123;Tom 20&#125;]</span></span><br><span class="line">	<span class="comment">//或者使用指针类型</span></span><br><span class="line">	m2 := <span class="keyword">map</span>[<span class="keyword">int</span>]*user&#123;</span><br><span class="line">		<span class="number">1</span>: &amp;user&#123;<span class="string">"Jack"</span>, <span class="number">20</span>&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	m2[<span class="number">1</span>].age++</span><br><span class="line">	fmt.Println(m2) <span class="comment">//map[1:0xc00000c0e0]</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然m[key]++ 是可以操作的，如果value支持的话<br>不能对nil字典进行写操作，但是可以读。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">var</span> m <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span></span><br><span class="line">	<span class="built_in">println</span>(m[<span class="string">"a"</span>])<span class="comment">//返回零值</span></span><br><span class="line">	m[<span class="string">"a"</span>] = <span class="number">1</span> <span class="comment">//panic: assignment to entry in nil map</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意了：内容为空的字典，与nil是不同的</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="keyword">var</span> m1 <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span></span><br><span class="line">	m2 := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>&#123;&#125;</span><br><span class="line">	<span class="built_in">println</span>(m1 == <span class="literal">nil</span>,m2 == <span class="literal">nil</span>)</span><br><span class="line">	<span class="comment">//true false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>两个map不支持比较操作,只能和nil比较</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	x := <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span>&#123;<span class="number">1</span>: <span class="string">"a"</span>&#125;</span><br><span class="line">	y := <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span>&#123;<span class="number">1</span>: <span class="string">"a"</span>&#125;</span><br><span class="line">	<span class="built_in">println</span>(x == y)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//invalid operation: x == y (map can only be compared to nil)</span></span><br></pre></td></tr></table></figure>
+<h3 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h3><p>在迭代期间删除或者新增键值是安全的。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	m := <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span>&#123;&#125;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">		m[i] = i + <span class="number">100</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> x := <span class="keyword">range</span> m &#123;</span><br><span class="line">		<span class="keyword">if</span> x == <span class="number">3</span> &#123;</span><br><span class="line">			m[<span class="number">100</span>] = <span class="number">1000</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">delete</span>(m, x)</span><br><span class="line">		fmt.Println(x, m)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 4 map[0:100 1:101 2:102 3:103 5:105 6:106 7:107 8:108 9:109]</span></span><br><span class="line"><span class="comment">// 5 map[0:100 1:101 2:102 3:103 6:106 7:107 8:108 9:109]</span></span><br><span class="line"><span class="comment">// 6 map[0:100 1:101 2:102 3:103 7:107 8:108 9:109]</span></span><br><span class="line"><span class="comment">// 7 map[0:100 1:101 2:102 3:103 8:108 9:109]</span></span><br><span class="line"><span class="comment">// 8 map[0:100 1:101 2:102 3:103 9:109]</span></span><br><span class="line"><span class="comment">// 1 map[0:100 2:102 3:103 9:109]</span></span><br><span class="line"><span class="comment">// 3 map[0:100 2:102 9:109 100:1000]</span></span><br><span class="line"><span class="comment">// 9 map[0:100 2:102 100:1000]</span></span><br><span class="line"><span class="comment">// 0 map[2:102 100:1000]</span></span><br><span class="line"><span class="comment">// 2 map[100:1000]</span></span><br><span class="line">我们可以看到 <span class="keyword">map</span> 迭代的无序性，每次删除m的元素都会更新</span><br></pre></td></tr></table></figure>
+<p>关于map并发操作导致的进程崩溃。(并发读、写、迭代)</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	m := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>&#123;<span class="string">"a"</span>:<span class="number">1</span>,<span class="string">"b"</span>:<span class="number">2</span>&#125;</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			m[<span class="string">"a"</span>] += <span class="number">1</span></span><br><span class="line">			time.Sleep(time.Microsecond)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			_ = m[<span class="string">"b"</span>]</span><br><span class="line">			time.Sleep(time.Microsecond)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">select</span> &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//fatal error: concurrent map read and map write</span></span><br></pre></td></tr></table></figure>
+<p>可以使用go run -race s.go 来检查此类问题,当然为了避免此类问题，可以使用读写互斥锁</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	m := <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>&#123;&#125;</span><br><span class="line">	<span class="keyword">var</span> lock sync.RWMutex</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			m[<span class="string">"a"</span>] += <span class="number">1</span></span><br><span class="line">			lock.Unlock()</span><br><span class="line">			time.Sleep(time.Microsecond)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			_ = m[<span class="string">"b"</span>]</span><br><span class="line">			lock.Unlock()</span><br><span class="line">			time.Sleep(time.Microsecond)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">select</span> &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在创建时预先准备足够的空间有助于提升性能，减少扩张时的内存分配和重新哈希操作。对于海量小对象，应该直接用字典存储键值数据拷贝而不是指针，这样减少扫描对象的数量缩短垃圾回收时间。另外，字典不会收缩内存，适当替换新对象是有必要的。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://devying.github.io/2018/03/25/golangmap/" title="golang map总结" target="_blank" rel="external">https://devying.github.io/2018/03/25/golangmap/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/Devying" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpeg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/Devying" target="_blank"><span class="text-dark">熠熙轻雷</span><small class="ml-1x">后端开发 &amp; 架构设计 &amp; 基础服务</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" title="golang 结构体总结"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2018/03/10/golang%E5%88%87%E7%89%87/" title="golang切片总结"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn" data-toggle="collapse" href="#collapseToc" aria-expanded="true" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2019 Devying
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '84d8f62d55a4bdb03aeb',
+    clientSecret: '6017014466b014f691ad29f7d89843f85cdb0161',
+    repo: 'devying.github.io',
+    owner: 'Devying',
+    admin: ['Devying'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>

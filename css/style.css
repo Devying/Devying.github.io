@@ -8926,10 +8926,10 @@ body.okayNav-loaded {
   }
 
   .theme-purple #main-navbar {
-    background: #494683;
-    background: -webkit-linear-gradient(left, #494683 0%, #555299 80%, #555299 100%);
-    background: -webkit-gradient(linear, left top, right top, from(#494683), color-stop(80%, #555299), to(#555299));
-    background: linear-gradient(to right, #494683 0%, #555299 80%, #555299 100%);
+    background: #f56767;
+    background: -webkit-linear-gradient(left, #e7717d 0%, #e67272 80%, #f56767 100%);
+    background: -webkit-gradient(linear, left top, right top, from(#e7717d), color-stop(80%, #e67272), to(#f56767));
+    background: linear-gradient(to right, #e7717d 0%, #e67272 80%, #f56767 100%);
   }
 }
 

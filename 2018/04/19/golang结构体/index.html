@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#34495e000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>golang 结构体总结 | 熠熙轻雷</title>
+  <meta name="description" content="结构字段名必须唯一，可以用”_”来部位，支持使用自身指针类型成员。字段名、排列顺序属类型组成部分。除对齐处理外，编译器不会优化，调整内存布局。 1234567891011121314151617type node struct &amp;#123;	_    int	id   int	next *node&amp;#125;func main() &amp;#123;	n1 := node&amp;#123;		id: 1,	&amp;">
+<meta name="keywords" content="golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang 结构体总结">
+<meta property="og:url" content="https:&#x2F;&#x2F;devying.github.io&#x2F;2018&#x2F;04&#x2F;19&#x2F;golang%E7%BB%93%E6%9E%84%E4%BD%93&#x2F;index.html">
+<meta property="og:site_name" content="熠熙轻雷">
+<meta property="og:description" content="结构字段名必须唯一，可以用”_”来部位，支持使用自身指针类型成员。字段名、排列顺序属类型组成部分。除对齐处理外，编译器不会优化，调整内存布局。 1234567891011121314151617type node struct &amp;#123;	_    int	id   int	next *node&amp;#125;func main() &amp;#123;	n1 := node&amp;#123;		id: 1,	&amp;">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-17T07:13:20.001Z">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://devying.github.io/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="熠熙轻雷" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/Devying" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpeg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">熠熙轻雷</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">后端开发 &amp; 架构设计 &amp; 基础服务</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>后端开发交流!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/golang/">golang</a><span class="category-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a><span class="tag-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/golang/" style="font-size: 13px;">golang</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" class="title">golang 结构体总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-04-18T16:23:02.000Z" itemprop="datePublished">2018-04-19</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/03/25/golangmap/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/03/25/golangmap/" class="title">golang map总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-03-24T16:23:02.000Z" itemprop="datePublished">2018-03-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/03/10/golang%E5%88%87%E7%89%87/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/03/10/golang%E5%88%87%E7%89%87/" class="title">golang切片总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-03-09T16:23:02.000Z" itemprop="datePublished">2018-03-10</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/02/25/golang%E6%95%B0%E7%BB%84/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/02/25/golang%E6%95%B0%E7%BB%84/" class="title">golang数组总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-02-24T16:23:02.000Z" itemprop="datePublished">2018-02-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/02/03/golang%E5%AD%97%E7%AC%A6%E4%B8%B2/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/02/03/golang%E5%AD%97%E7%AC%A6%E4%B8%B2/" class="title">golang字符串总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-02-02T16:23:02.000Z" itemprop="datePublished">2018-02-03</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse in" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#结构"><span class="toc-number">1.</span> <span class="toc-text">结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#空结构"><span class="toc-number">1.1.</span> <span class="toc-text">空结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#匿名字段"><span class="toc-number">1.2.</span> <span class="toc-text">匿名字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字段标签"><span class="toc-number">1.3.</span> <span class="toc-text">字段标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#内存分布"><span class="toc-number">1.4.</span> <span class="toc-text">内存分布</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <!-- <link rel="stylesheet"
+      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/atom-one-dark.min.css">
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> -->
+<div class="content">
+  <article id="post-golang结构体" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      golang 结构体总结
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" class="article-date">
+	  <time datetime="2018-04-18T16:23:02.000Z" itemprop="datePublished">2018-04-19</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/golang/">golang</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/golang/" rel="tag">golang</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h2><p>字段名必须唯一，可以用”_”来部位，支持使用自身指针类型成员。字段名、排列顺序属类型组成部分。除对齐处理外，编译器不会优化，调整内存布局。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> node <span class="keyword">struct</span> &#123;</span><br><span class="line">	_    <span class="keyword">int</span></span><br><span class="line">	id   <span class="keyword">int</span></span><br><span class="line">	next *node</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	n1 := node&#123;</span><br><span class="line">		id: <span class="number">1</span>,</span><br><span class="line">	&#125;</span><br><span class="line">	n2 := node&#123;</span><br><span class="line">		id:   <span class="number">2</span>,</span><br><span class="line">		next: &amp;n1,</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(n1, n2)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//&#123;0 1 &lt;nil&gt;&#125; &#123;0 2 0xc00006e020&#125;</span></span><br></pre></td></tr></table></figure>
+<p>只有在所有字段类型全部时，才可以做相等操作。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	d1 := data&#123;</span><br><span class="line">		x: <span class="number">1</span>,</span><br><span class="line">	&#125;</span><br><span class="line">	d2 := data&#123;</span><br><span class="line">		x: <span class="number">1</span>,</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(d1 == d2)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//invalid operation: d1 == d2 (struct containing map[string]int cannot be compared)</span></span><br></pre></td></tr></table></figure>
+<p>可以使用指针直接操作结构字段，但不能是多级指针。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> user <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">	age  <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	p := &amp;user&#123;</span><br><span class="line">		name: <span class="string">"TOM"</span>,</span><br><span class="line">		age:  <span class="number">22</span>,</span><br><span class="line">	&#125;</span><br><span class="line">	p.name = <span class="string">"TAE"</span></span><br><span class="line">	p.age++</span><br><span class="line">	p2 := &amp;p</span><br><span class="line">	fmt.Println(p, *p2)</span><br><span class="line">	(*p2).name = <span class="string">"Jack"</span></span><br><span class="line">	fmt.Println((*p2).name)</span><br><span class="line">	fmt.Println((*p2).age)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// &amp;&#123;TAE 23&#125; &amp;&#123;TAE 23&#125;</span></span><br><span class="line"><span class="comment">// Jack</span></span><br><span class="line"><span class="comment">// 23</span></span><br></pre></td></tr></table></figure>
+<h3 id="空结构"><a href="#空结构" class="headerlink" title="空结构"></a>空结构</h3><p>空结构是指没有字段的结构类型，它比较特殊，因为无论是其自身，还是作为数组元素类型，其长度都是0,<br>但是尽管没有分配数组内存，但依然可以操作元素，对应切片len、cap属性也正常。<br>实际上这类”长度”为零的对象通常都指向runtime.zerobase变量</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> a <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">	<span class="keyword">var</span> b [<span class="number">100</span>]<span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">	<span class="keyword">var</span> d [<span class="number">100</span>]<span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">	<span class="built_in">println</span>(unsafe.Sizeof(a), unsafe.Sizeof(b))</span><br><span class="line">	s := d[:]</span><br><span class="line">	d[<span class="number">1</span>] = <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">	s[<span class="number">2</span>] = <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">	fmt.Println(s[<span class="number">3</span>], <span class="built_in">len</span>(s), <span class="built_in">cap</span>(s))</span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	s1 := [<span class="number">10</span>]<span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">	s2 := s1[:]</span><br><span class="line">	s3 := [<span class="number">0</span>]<span class="keyword">int</span>&#123;&#125;</span><br><span class="line">	fmt.Printf(<span class="string">"%p,%p,%p"</span>, &amp;s1, &amp;s2[<span class="number">0</span>], &amp;s3)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//0 0</span></span><br><span class="line"><span class="comment">//&#123;&#125; 100 100</span></span><br><span class="line"><span class="comment">//0x118efd0,0x118efd0,0x118efd0</span></span><br></pre></td></tr></table></figure>
+<p>空结构可以用作通道元素类型，用于事件通知。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;)</span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">	ch &lt;- <span class="keyword">struct</span>&#123;&#125;&#123;&#125;</span><br><span class="line">&#125;()</span><br><span class="line">&lt;-ch</span><br></pre></td></tr></table></figure>
+<h3 id="匿名字段"><a href="#匿名字段" class="headerlink" title="匿名字段"></a>匿名字段</h3><p>所谓匿名字段，是指没有名字，仅有类型的字段，也被称作嵌入字段或者嵌入类型,这类用法非常常见。<br>如嵌入其他包中的类型，则隐式字段名不包括包名。就是说定义的时候字段是File而非os.File</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> user <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">	age  <span class="keyword">int</span></span><br><span class="line">	addr</span><br><span class="line">	os.File</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> addr <span class="keyword">struct</span> &#123;</span><br><span class="line">	city <span class="keyword">string</span></span><br><span class="line">	road <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	u := user&#123;</span><br><span class="line">		name: <span class="string">"tom"</span>,</span><br><span class="line">		age:  <span class="number">2</span>,</span><br><span class="line">		addr: addr&#123;</span><br><span class="line">			city: <span class="string">"Beijing"</span>,</span><br><span class="line">			road: <span class="string">"XiBeiWang"</span>,</span><br><span class="line">		&#125;,</span><br><span class="line">		File: os.File&#123;&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	u.city = <span class="string">"Tianjin"</span></span><br><span class="line">	fmt.Println(u)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//&#123;tom 2 &#123;Tianjin XiBeiWang&#125; &#123;&lt;nil&gt;&#125;&#125;</span></span><br></pre></td></tr></table></figure>
+<p>不仅仅是结构体，除接口指针和多级指针以外的任何命名类型都可以作为匿名字段</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> data <span class="keyword">struct</span> &#123;</span><br><span class="line">	*<span class="keyword">int</span></span><br><span class="line">	<span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	x := <span class="number">100</span></span><br><span class="line">	d := data&#123;</span><br><span class="line">		<span class="keyword">int</span>:    &amp;x,</span><br><span class="line">		<span class="keyword">string</span>: <span class="string">"Abc"</span>,</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Printf(<span class="string">"%#v\n"</span>, d)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//main.data&#123;int:(*int)(0xc00007e008), string:"Abc"&#125;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> a *<span class="keyword">int</span></span><br><span class="line"><span class="keyword">type</span> b **<span class="keyword">int</span></span><br><span class="line"><span class="keyword">type</span> c <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line"><span class="keyword">type</span> d <span class="keyword">struct</span> &#123;</span><br><span class="line">	*a        <span class="comment">//embedded type cannot be a pointer</span></span><br><span class="line">	b         <span class="comment">//embedded type cannot be a pointer</span></span><br><span class="line">	c         <span class="comment">//embedded type cannot be a pointer to interface</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不能将基础类型和其指针类型同时嵌入，因为两者隐式名字相同。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> file <span class="keyword">struct</span>&#123;</span><br><span class="line">	*<span class="keyword">int</span></span><br><span class="line">	<span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然可以像普通字段那要访问匿名字段成员，但是会存在重名问题。如果是这样的话就必须要使用显式字段名。<br>如果有多个成员都存在重名情况就必须要使用显式字段名。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> file <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> data <span class="keyword">struct</span> &#123;</span><br><span class="line">	file</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	d := data&#123;</span><br><span class="line">		name: <span class="string">"data"</span>,</span><br><span class="line">		file: file&#123;</span><br><span class="line">			<span class="string">"file"</span>,</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	d.name = <span class="string">"data2"</span></span><br><span class="line">	d.file.name = <span class="string">"file2"</span> <span class="comment">//使用显式的方式访问 data.file.name</span></span><br><span class="line">	fmt.Println(d)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//&#123;&#123;file2&#125; data2&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="字段标签"><a href="#字段标签" class="headerlink" title="字段标签"></a>字段标签</h3><p>字段标签(tag)并不是注释，而是用来对字段进行描述的元数据。尽管它不属于数据成员，但却是类型的组成部分。<br>在运行期间，可用发射获取标签信息。它常常被用作格式校验，数据库关系映射等。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> user <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span> <span class="string">`昵称`</span></span><br><span class="line">	sex  <span class="keyword">byte</span>   <span class="string">`性别`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	u := user&#123;<span class="string">"Tom"</span>, <span class="number">1</span>&#125;</span><br><span class="line">	v := reflect.ValueOf(u)</span><br><span class="line">	t := v.Type()</span><br><span class="line">	<span class="keyword">for</span> i, n := <span class="number">0</span>, t.NumField(); i &lt; n; i++ &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"%s: %v\n"</span>, t.Field(i).Tag, v.Field(i))</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 昵称: Tom</span></span><br><span class="line"><span class="comment">// 性别: 1</span></span><br></pre></td></tr></table></figure>
+<h3 id="内存分布"><a href="#内存分布" class="headerlink" title="内存分布"></a>内存分布</h3><p>不管结构体包含多少字段，其内存总是一次性分配的，各字段在相邻的地址空间按定义顺序排列，当然对于引用类型、字符串和指针，结构内存中只包含其基本（头部）数据。还有，所有匿名字段成员也被包含在内。<br>借助unsafe包中的相关函数，可输出所有字段的偏移量和长度。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> point <span class="keyword">struct</span> &#123;</span><br><span class="line">	x, y <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> value <span class="keyword">struct</span> &#123;</span><br><span class="line">	id    <span class="keyword">int</span>    <span class="comment">//基本类型</span></span><br><span class="line">	name  <span class="keyword">string</span> <span class="comment">//字符串</span></span><br><span class="line">	data  []<span class="keyword">byte</span> <span class="comment">//引用类型</span></span><br><span class="line">	next  *value <span class="comment">//指针类型</span></span><br><span class="line">	point        <span class="comment">//匿名字段</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	v := value&#123;</span><br><span class="line">		id:    <span class="number">1</span>,</span><br><span class="line">		name:  <span class="string">"jack"</span>,</span><br><span class="line">		data:  []<span class="keyword">byte</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;,</span><br><span class="line">		point: point&#123;x: <span class="number">-100</span>, y: <span class="number">-10</span>&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Printf(<span class="string">"v: %p ~ %x, size: %d, align: %d\n"</span>, &amp;v, <span class="keyword">uintptr</span>(unsafe.Pointer(&amp;v))+unsafe.Sizeof(v), unsafe.Sizeof(v), unsafe.Alignof(v))</span><br><span class="line">	fmt.Printf(<span class="string">"id addr: %p  offset: %d  size: %d\n"</span>, &amp;v.id, unsafe.Offsetof(v.id), unsafe.Sizeof(v.id))</span><br><span class="line">	fmt.Printf(<span class="string">"name addr: %p  offset: %d  size: %d\n"</span>, &amp;v.name, unsafe.Offsetof(v.name), unsafe.Sizeof(v.name))</span><br><span class="line">	fmt.Printf(<span class="string">"data addr: %p  offset: %d  size: %d\n"</span>, &amp;v.data, unsafe.Offsetof(v.data), unsafe.Sizeof(v.data))</span><br><span class="line">	fmt.Printf(<span class="string">"next addr: %p  offset: %d  size: %d\n"</span>, &amp;v.next, unsafe.Offsetof(v.next), unsafe.Sizeof(v.next))</span><br><span class="line">	fmt.Printf(<span class="string">"pointx addr: %p  offset: %d  size: %d\n"</span>, &amp;v.x, unsafe.Offsetof(v.x), unsafe.Sizeof(v.x))</span><br><span class="line">	fmt.Printf(<span class="string">"pointy addr: %p  offset: %d  size: %d\n"</span>, &amp;v.y, unsafe.Offsetof(v.y), unsafe.Sizeof(v.y))</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//对齐 8</span></span><br><span class="line"><span class="comment">// v: 0xc00008c000 ~ c00008c000, size: 72, align: 8</span></span><br><span class="line"><span class="comment">// id addr: 0xc00008c000  offset: 0  size: 8</span></span><br><span class="line"><span class="comment">// name addr: 0xc00008c008  offset: 8  size: 16</span></span><br><span class="line"><span class="comment">// data addr: 0xc00008c018  offset: 24  size: 24</span></span><br><span class="line"><span class="comment">// next addr: 0xc00008c030  offset: 48  size: 8</span></span><br><span class="line"><span class="comment">// pointx addr: 0xc00008c038  offset: 56  size: 8</span></span><br><span class="line"><span class="comment">// pointy addr: 0xc00008c040  offset: 64  size: 8</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">     |-------- name -------|------------- data -------------|      |------ point ------|</span><br><span class="line">+----+----------+----------+----------+----------+----------+------+---------+---------+</span><br><span class="line">| id | name.ptr | name.len | data.ptr | data.len | data.cap | next | point.x | point.y |</span><br><span class="line">+----+----------+----------+----------+----------+----------+------+---------+---------+</span><br><span class="line">0    8          16         24         32         40         48     56        64        72</span><br></pre></td></tr></table></figure>
+<p>在分配内存时，字段须做对齐处理，通常以所有字段中最长的基础类型宽度为标准。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// v0 := struct&#123;</span></span><br><span class="line">	<span class="comment">// 	a byte</span></span><br><span class="line">	<span class="comment">// 	b []int //基础类型为int 对齐宽度是8</span></span><br><span class="line">	<span class="comment">// 	c byte</span></span><br><span class="line">	<span class="comment">// &#125;&#123;&#125;</span></span><br><span class="line">	v1 := <span class="keyword">struct</span> &#123;</span><br><span class="line">		a <span class="keyword">byte</span></span><br><span class="line">		b <span class="keyword">byte</span></span><br><span class="line">		c <span class="keyword">int32</span> <span class="comment">//对齐宽度4</span></span><br><span class="line">	&#125;&#123;<span class="number">1</span>, <span class="number">1</span>, <span class="number">16</span>&#125;</span><br><span class="line">	fmt.Printf(<span class="string">"%d %d\n"</span>, unsafe.Alignof(v1), unsafe.Sizeof(v1))</span><br><span class="line">	fmt.Printf(<span class="string">"%p,%d,%d\n"</span>, &amp;v1.a, unsafe.Offsetof(v1.a), unsafe.Sizeof(v1.a))</span><br><span class="line">	fmt.Printf(<span class="string">"%p,%d,%d\n"</span>, &amp;v1.b, unsafe.Offsetof(v1.b), unsafe.Sizeof(v1.b))</span><br><span class="line">	fmt.Printf(<span class="string">"%p,%d,%d\n"</span>, &amp;v1.c, unsafe.Offsetof(v1.c), unsafe.Sizeof(v1.c))</span><br><span class="line">	<span class="comment">//a是1位b是1位，"xx" c 是4位 单独开启 4位 ，那么排列起来就是 xx--|xxxx 宽度是4的对齐少于4个的重新开4个</span></span><br><span class="line">	<span class="comment">//假如我们换个顺序改成a、c、b 我们预测一下应该是x---|xxxx|x--- </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>比较特殊的是空结构类型的字段。如果它是最后一个字段，那么编译器将其当做长度为1的类型做对齐处理，以便其地址不会越界，避免引发垃圾回收错误。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	v1 := <span class="keyword">struct</span> &#123;</span><br><span class="line">		a <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">		c <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">		b <span class="keyword">int</span></span><br><span class="line">	&#125;&#123;&#125;</span><br><span class="line">	fmt.Printf(<span class="string">"%p ~ %x, size: %d  align: %d\n"</span>, &amp;v1, <span class="keyword">uintptr</span>(unsafe.Pointer(&amp;v1))+unsafe.Sizeof(v1), unsafe.Sizeof(v1), unsafe.Alignof(v1))</span><br><span class="line">	fmt.Printf(<span class="string">"a addr: %p  offset: %d size: %d\n"</span>, &amp;v1.a, unsafe.Offsetof(v1.a), unsafe.Sizeof(v1.a))</span><br><span class="line">	fmt.Printf(<span class="string">"b addr: %p  offset: %d size: %d\n"</span>, &amp;v1.b, unsafe.Offsetof(v1.b), unsafe.Sizeof(v1.b))</span><br><span class="line">	fmt.Printf(<span class="string">"c addr: %p  offset: %d size: %d\n"</span>, &amp;v1.c, unsafe.Offsetof(v1.c), unsafe.Sizeof(v1.c))</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 0xc000092000 ~ c000092010, size: 16  align: 8</span></span><br><span class="line"><span class="comment">// a addr: 0xc000092000  offset: 0 size: 0</span></span><br><span class="line"><span class="comment">// b addr: 0xc000092000  offset: 0 size: 8</span></span><br><span class="line"><span class="comment">// c addr: 0xc000092008  offset: 8 size: 0</span></span><br><span class="line"><span class="comment">// xxxxxxxx|x------  最后一个字段长度1</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://devying.github.io/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" title="golang 结构体总结" target="_blank" rel="external">https://devying.github.io/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/Devying" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpeg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/Devying" target="_blank"><span class="text-dark">熠熙轻雷</span><small class="ml-1x">后端开发 &amp; 架构设计 &amp; 基础服务</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="/2018/03/25/golangmap/" title="golang map总结"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn" data-toggle="collapse" href="#collapseToc" aria-expanded="true" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2019 Devying
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '84d8f62d55a4bdb03aeb',
+    clientSecret: '6017014466b014f691ad29f7d89843f85cdb0161',
+    repo: 'devying.github.io',
+    owner: 'Devying',
+    admin: ['Devying'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>

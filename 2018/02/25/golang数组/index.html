@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#34495e000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>golang数组总结 | 熠熙轻雷</title>
+  <meta name="description" content="数组定义定义数组类型时，数组长度必须是非负整数常量表达式，长度是类型组成部分。也就是说，元素类型相同，但是长度不同的数组不属于同一类型。 12345var a [4]intb := [4]int&amp;#123;2,5&amp;#125; &#x2F;&#x2F;未初始化的元素自动初始化为0c := [4]int&amp;#123;5,3:10&amp;#125; &#x2F;&#x2F;可以指定索引位置初始化d := [...]int&amp;#123;12,13,14&amp;">
+<meta name="keywords" content="golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang数组总结">
+<meta property="og:url" content="https:&#x2F;&#x2F;devying.github.io&#x2F;2018&#x2F;02&#x2F;25&#x2F;golang%E6%95%B0%E7%BB%84&#x2F;index.html">
+<meta property="og:site_name" content="熠熙轻雷">
+<meta property="og:description" content="数组定义定义数组类型时，数组长度必须是非负整数常量表达式，长度是类型组成部分。也就是说，元素类型相同，但是长度不同的数组不属于同一类型。 12345var a [4]intb := [4]int&amp;#123;2,5&amp;#125; &#x2F;&#x2F;未初始化的元素自动初始化为0c := [4]int&amp;#123;5,3:10&amp;#125; &#x2F;&#x2F;可以指定索引位置初始化d := [...]int&amp;#123;12,13,14&amp;">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-17T06:49:37.812Z">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://devying.github.io/2018/02/25/golang%E6%95%B0%E7%BB%84/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="熠熙轻雷" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/Devying" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpeg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">熠熙轻雷</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">后端开发 &amp; 架构设计 &amp; 基础服务</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>后端开发交流!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/golang/">golang</a><span class="category-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a><span class="tag-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/golang/" style="font-size: 13px;">golang</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" class="title">golang 结构体总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-04-18T16:23:02.000Z" itemprop="datePublished">2018-04-19</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/03/25/golangmap/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/03/25/golangmap/" class="title">golang map总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-03-24T16:23:02.000Z" itemprop="datePublished">2018-03-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/03/10/golang%E5%88%87%E7%89%87/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/03/10/golang%E5%88%87%E7%89%87/" class="title">golang切片总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-03-09T16:23:02.000Z" itemprop="datePublished">2018-03-10</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/02/25/golang%E6%95%B0%E7%BB%84/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/02/25/golang%E6%95%B0%E7%BB%84/" class="title">golang数组总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-02-24T16:23:02.000Z" itemprop="datePublished">2018-02-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/02/03/golang%E5%AD%97%E7%AC%A6%E4%B8%B2/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/02/03/golang%E5%AD%97%E7%AC%A6%E4%B8%B2/" class="title">golang字符串总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-02-02T16:23:02.000Z" itemprop="datePublished">2018-02-03</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse in" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数组"><span class="toc-number">1.</span> <span class="toc-text">数组</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#定义"><span class="toc-number">1.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#指针"><span class="toc-number">1.2.</span> <span class="toc-text">指针</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#复制"><span class="toc-number">1.3.</span> <span class="toc-text">复制</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <!-- <link rel="stylesheet"
+      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/atom-one-dark.min.css">
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> -->
+<div class="content">
+  <article id="post-golang数组" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      golang数组总结
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2018/02/25/golang%E6%95%B0%E7%BB%84/" class="article-date">
+	  <time datetime="2018-02-24T16:23:02.000Z" itemprop="datePublished">2018-02-25</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/golang/">golang</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/golang/" rel="tag">golang</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2018/02/25/golang%E6%95%B0%E7%BB%84/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>定义数组类型时，数组长度必须是非负整数常量表达式，长度是类型组成部分。也就是说，元素类型相同，但是长度不同的数组不属于同一类型。</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var a [<span class="number">4</span>]<span class="built_in">int</span></span><br><span class="line">b := [<span class="number">4</span>]<span class="built_in">int</span>&#123;<span class="number">2</span>,<span class="number">5</span>&#125; <span class="comment">//未初始化的元素自动初始化为0</span></span><br><span class="line">c := [<span class="number">4</span>]<span class="built_in">int</span>&#123;<span class="number">5</span>,<span class="number">3</span>:<span class="number">10</span>&#125; <span class="comment">//可以指定索引位置初始化</span></span><br><span class="line">d := [...]<span class="built_in">int</span>&#123;<span class="number">12</span>,<span class="number">13</span>,<span class="number">14</span>&#125; <span class="comment">//编译器按初始化值的数量来确定数组的长度</span></span><br><span class="line">e := [...]<span class="built_in">int</span>&#123;<span class="number">10</span>,<span class="number">5</span>:<span class="number">100</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>对于结构等复合类型，可以省略元素初始化类型标签。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> user <span class="keyword">struct</span> &#123;</span><br><span class="line">	name <span class="keyword">string</span></span><br><span class="line">	age  <span class="keyword">byte</span></span><br><span class="line">&#125;</span><br><span class="line">d := [...]user&#123;</span><br><span class="line">	&#123;<span class="string">"Huangby"</span>, <span class="number">30</span>&#125;,</span><br><span class="line">	&#123;<span class="string">"Mi"</span>, <span class="number">20</span>&#125;,</span><br><span class="line">&#125;</span><br><span class="line">fmt.Printf(<span class="string">"%#v"</span>, d)</span><br><span class="line"><span class="comment">//以上输出</span></span><br><span class="line">[<span class="number">2</span>]main.user&#123;main.user&#123;name:<span class="string">"Huangby"</span>, age:<span class="number">0x1e</span>&#125;, main.user&#123;name:<span class="string">"Mi"</span>, age:<span class="number">0x14</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>在定义多维数组时仅第一维度允许使用”…”</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">b := [...][<span class="number">3</span>]<span class="keyword">int</span>&#123;</span><br><span class="line">	&#123;<span class="number">10</span>,<span class="number">20</span>&#125;,</span><br><span class="line">	&#123;<span class="number">10</span>,<span class="number">20</span>,<span class="number">50</span>&#125;,</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//结果是 [[10 20 0] [10 20 50]]</span></span><br><span class="line">c := [...][<span class="number">3</span>][<span class="number">4</span>]<span class="keyword">int</span>&#123;</span><br><span class="line">	&#123;</span><br><span class="line">		&#123;<span class="number">10</span>,<span class="number">12</span>,<span class="number">2</span>&#125;,</span><br><span class="line">		&#123;<span class="number">6</span>,<span class="number">12</span>&#125;,</span><br><span class="line">		&#123;<span class="number">100</span>&#125;,</span><br><span class="line">	&#125;,</span><br><span class="line">	&#123;</span><br><span class="line">		&#123;<span class="number">13</span>,<span class="number">2</span>:<span class="number">90</span>&#125;,</span><br><span class="line">		&#123;<span class="number">6</span>&#125;,</span><br><span class="line">		&#123;<span class="number">3</span>:<span class="number">33</span>&#125;,</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//结果是 [[[10 12 2 0] [6 12 0 0] [100 0 0 0]] [[13 0 90 0] [6 0 0 0] [0 0 0 33]]]</span></span><br></pre></td></tr></table></figure>
+<p>另外内置函数len和cap都返回的是第一维度的长度<br>如果数组的元素类型支持“==”或者“!=”操作，那么对应数组也支持。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a,b [<span class="number">2</span>]<span class="keyword">int</span></span><br><span class="line"><span class="built_in">println</span>(a==b) <span class="comment">//int支持==操作符  true</span></span><br><span class="line"></span><br><span class="line">c := [<span class="number">2</span>]<span class="keyword">int</span>&#123;<span class="number">1</span>,<span class="number">2</span>&#125;</span><br><span class="line">d := [<span class="number">2</span>]<span class="keyword">int</span>&#123;<span class="number">0</span>,<span class="number">1</span>&#125;</span><br><span class="line"><span class="built_in">println</span>(c==d) <span class="comment">//false</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> e,f [<span class="number">2</span>]<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span></span><br><span class="line"><span class="built_in">println</span>(e == f) <span class="comment">//map[string]int 不支持 == 操作符</span></span><br></pre></td></tr></table></figure>
+<h3 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h3><p>要分清楚指针数组和数组指针的区别，指针数是指元素为指针类型的数组，数组指针是获取数组变量的地址。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">x, y := <span class="number">10</span>, <span class="number">20</span></span><br><span class="line">a := [...]*<span class="keyword">int</span>&#123;&amp;x, &amp;y&#125;</span><br><span class="line">p := &amp;a</span><br><span class="line">fmt.Printf(<span class="string">"%T,%v\n"</span>, a, a) <span class="comment">//元素为指针的指针数组</span></span><br><span class="line">fmt.Printf(<span class="string">"%T,%v\n"</span>, p, p) <span class="comment">//存储数组地址的指针</span></span><br><span class="line"><span class="comment">//以上输出</span></span><br><span class="line"><span class="comment">// [2]*int,[0xc000092000 0xc00007e008]</span></span><br><span class="line"><span class="comment">// *[2]*int,&amp;[0xc000092000 0xc00007e008]</span></span><br></pre></td></tr></table></figure>
+<p>另外我们可以获取任何元素的地址</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a := [...]<span class="keyword">int</span>&#123;<span class="number">1</span>,<span class="number">2</span>&#125;</span><br><span class="line"><span class="built_in">println</span>(&amp;a,&amp;a[<span class="number">0</span>],&amp;a[<span class="number">1</span>])</span><br><span class="line"><span class="comment">//以上输出</span></span><br><span class="line"><span class="comment">//0xc000032778 0xc000032778 0xc000032780</span></span><br></pre></td></tr></table></figure>
+<p>数组指针可以直接用来操作元素</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">a := [...]<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>&#125;</span><br><span class="line">p := &amp;a</span><br><span class="line">p[<span class="number">1</span>] += <span class="number">20</span>  <span class="comment">//直接操作元素</span></span><br><span class="line"><span class="built_in">println</span>(p[<span class="number">1</span>]) <span class="comment">//22</span></span><br><span class="line"><span class="comment">//&amp;a[0] += 100//错误 cannot assign to &amp;a[0]</span></span><br><span class="line"><span class="comment">//正确的姿势  因为都是int 也可以将unsafe去掉</span></span><br><span class="line">up := (*<span class="keyword">int</span>)(unsafe.Pointer(&amp;a[<span class="number">0</span>]))</span><br><span class="line">*up = <span class="number">100</span></span><br><span class="line"><span class="comment">//或者 up := &amp;a[0] *up += 100</span></span><br><span class="line"><span class="built_in">println</span>(a[<span class="number">0</span>], a[<span class="number">1</span>]) <span class="comment">//100 22</span></span><br></pre></td></tr></table></figure>
+<h3 id="复制"><a href="#复制" class="headerlink" title="复制"></a>复制</h3><p>与C数组变量隐式作为指针使用不同，Go数组是值类型，赋值和传参操作都会复制整个数组数据。如果需要，可改用指针或者切片，避免数据复制。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://devying.github.io/2018/02/25/golang%E6%95%B0%E7%BB%84/" title="golang数组总结" target="_blank" rel="external">https://devying.github.io/2018/02/25/golang%E6%95%B0%E7%BB%84/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/Devying" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpeg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/Devying" target="_blank"><span class="text-dark">熠熙轻雷</span><small class="ml-1x">后端开发 &amp; 架构设计 &amp; 基础服务</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2018/03/10/golang%E5%88%87%E7%89%87/" title="golang切片总结"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2018/02/03/golang%E5%AD%97%E7%AC%A6%E4%B8%B2/" title="golang字符串总结"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn" data-toggle="collapse" href="#collapseToc" aria-expanded="true" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2019 Devying
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '84d8f62d55a4bdb03aeb',
+    clientSecret: '6017014466b014f691ad29f7d89843f85cdb0161',
+    repo: 'devying.github.io',
+    owner: 'Devying',
+    admin: ['Devying'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>
