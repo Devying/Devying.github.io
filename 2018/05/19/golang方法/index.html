@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#34495e000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>golang 方法总结 | 熠熙轻雷</title>
+  <meta name="description" content="定义方法是对象实例绑定的特殊函数，方法和函数的区别是前者有前置实例接收参数（receiver），编译器以此确定方法所属类型。我们可以为当前包，以及除接口和指针以外的任何类型定义方法。 12345678910type N intfunc (n N) toString() string &amp;#123;	return fmt.Sprintf(&quot;%#x&quot;, n)&amp;#125;func main() &amp;#123">
+<meta name="keywords" content="golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang 方法总结">
+<meta property="og:url" content="https:&#x2F;&#x2F;devying.github.io&#x2F;2018&#x2F;05&#x2F;19&#x2F;golang%E6%96%B9%E6%B3%95&#x2F;index.html">
+<meta property="og:site_name" content="熠熙轻雷">
+<meta property="og:description" content="定义方法是对象实例绑定的特殊函数，方法和函数的区别是前者有前置实例接收参数（receiver），编译器以此确定方法所属类型。我们可以为当前包，以及除接口和指针以外的任何类型定义方法。 12345678910type N intfunc (n N) toString() string &amp;#123;	return fmt.Sprintf(&quot;%#x&quot;, n)&amp;#125;func main() &amp;#123">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-02-05T09:43:23.698Z">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://devying.github.io/2018/05/19/golang%E6%96%B9%E6%B3%95/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="熠熙轻雷" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/Devying" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpeg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">熠熙轻雷</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">后端开发 &amp; 架构设计 &amp; 基础服务</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>后端开发交流!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/golang/">golang</a><span class="category-list-count">9</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a><span class="tag-list-count">9</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/golang/" style="font-size: 13px;">golang</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/05/28/golang%E6%8E%A5%E5%8F%A3/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/05/28/golang%E6%8E%A5%E5%8F%A3/" class="title">golang 接口总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-05-28T08:13:11.000Z" itemprop="datePublished">2018-05-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/05/19/golang%E6%96%B9%E6%B3%95/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/05/19/golang%E6%96%B9%E6%B3%95/" class="title">golang 方法总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-05-19T07:23:02.000Z" itemprop="datePublished">2018-05-19</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" class="title">golang 结构体总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-04-18T16:23:02.000Z" itemprop="datePublished">2018-04-19</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/03/25/golangmap/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/03/25/golangmap/" class="title">golang map总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-03-24T16:23:02.000Z" itemprop="datePublished">2018-03-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/03/10/golang%E5%88%87%E7%89%87/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/03/10/golang%E5%88%87%E7%89%87/" class="title">golang切片总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-03-09T16:23:02.000Z" itemprop="datePublished">2018-03-10</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse in" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#定义"><span class="toc-number">1.</span> <span class="toc-text">定义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#匿名字段"><span class="toc-number">1.1.</span> <span class="toc-text">匿名字段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法集"><span class="toc-number">1.2.</span> <span class="toc-text">方法集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#表达式"><span class="toc-number">1.3.</span> <span class="toc-text">表达式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Method-Expression"><span class="toc-number">1.3.1.</span> <span class="toc-text">Method Expression</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Method-Value"><span class="toc-number">1.3.2.</span> <span class="toc-text">Method Value</span></a></li></ol></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <!-- <link rel="stylesheet"
+      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/atom-one-dark.min.css">
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> -->
+<div class="content">
+  <article id="post-golang方法" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      golang 方法总结
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2018/05/19/golang%E6%96%B9%E6%B3%95/" class="article-date">
+	  <time datetime="2018-05-19T07:23:02.000Z" itemprop="datePublished">2018-05-19</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/golang/">golang</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/golang/" rel="tag">golang</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2018/05/19/golang%E6%96%B9%E6%B3%95/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>方法是对象实例绑定的特殊函数，方法和函数的区别是前者有前置实例接收参数（receiver），编译器以此确定方法所属类型。<br>我们可以为当前包，以及除接口和指针以外的任何类型定义方法。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> N <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n N)</span> <span class="title">toString</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> fmt.Sprintf(<span class="string">"%#x"</span>, n)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> a N = <span class="number">25</span></span><br><span class="line">	<span class="built_in">println</span>(a.toString())</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//0x19</span></span><br></pre></td></tr></table></figure>
+<p>方法同样不支持重载。receiver参数名没有限制，按惯例会选用简短有意义的名称。如方法内部并不引用实例，可以省略参数名，仅保留类型</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> N <span class="keyword">int</span></span><br><span class="line">fun (N) test()&#123;</span><br><span class="line">    <span class="built_in">println</span>(<span class="string">"hi"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>方法可以看作特殊的函数，那么receiver的类型自然可以是基础类型或指针类型。这会关系到调用时对象实例是否被复制。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> N <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n N)</span> <span class="title">value</span><span class="params">()</span></span> &#123;</span><br><span class="line">	n++</span><br><span class="line">	fmt.Printf(<span class="string">"v: %p,%v\n"</span>, &amp;n, n)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *N)</span> <span class="title">pointer</span><span class="params">()</span></span> &#123;</span><br><span class="line">	(*n)++</span><br><span class="line">	fmt.Printf(<span class="string">"v: %p,%v\n"</span>, n, *n)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> a N = <span class="number">25</span></span><br><span class="line">	a.value()</span><br><span class="line">	a.pointer()</span><br><span class="line">	fmt.Printf(<span class="string">"a: %p,%v\n"</span>, &amp;a, a)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// v: 0xc000086008,26    // receiver 被复制</span></span><br><span class="line"><span class="comment">// v: 0xc000086000,26</span></span><br><span class="line"><span class="comment">// a: 0xc000086000,26</span></span><br><span class="line"><span class="comment">//</span></span><br></pre></td></tr></table></figure>
+<p>可以使用<code>实例值或者指针</code>调用方法，编译器会根据方法 receiver类型自动在基础类型和指针类型间转换,但是不能用多级指针调用方法。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n N)</span> <span class="title">value</span><span class="params">()</span></span> &#123;</span><br><span class="line">	n++</span><br><span class="line">	fmt.Printf(<span class="string">"v: %p,%v\n"</span>, &amp;n, n)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *N)</span> <span class="title">pointer</span><span class="params">()</span></span> &#123;</span><br><span class="line">	(*n)++</span><br><span class="line">	fmt.Printf(<span class="string">"v: %p,%v\n"</span>, n, *n)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> a N = <span class="number">25</span></span><br><span class="line">	a.value()</span><br><span class="line">	a.pointer()</span><br><span class="line">	fmt.Printf(<span class="string">"a: %p,%v\n"</span>, &amp;a, a)</span><br><span class="line">	b := &amp;a</span><br><span class="line">	b.value()</span><br><span class="line">	b.pointer()</span><br><span class="line">    fmt.Printf(<span class="string">"b: %p,%v"</span>, b, *b)</span><br><span class="line">    c := &amp;b</span><br><span class="line">    c.value() <span class="comment">//错误：calling method value with receiver c (type **N) requires explicit dereference</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>指针类型的receiver必须是合法的指针(包括nil)，或能获取实例地址。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> X <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(x *X)</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">"hi"</span>, x)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> a *X</span><br><span class="line">	a.test()  <span class="comment">//hi 0x0</span></span><br><span class="line">	X&#123;&#125;.test()  <span class="comment">//cannot call pointer method on X literal</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如何选择方法的receiver类型呢</p>
+<ul>
+<li>要修改实例状态，用*T。</li>
+<li>无需修改状态的小对象或者固定值，建议用T。</li>
+<li>大对象建议用*T，以减少复制成本。</li>
+<li>引用类型、字符串、函数等指针包装对象，直接用T。</li>
+<li>若包含Mutex等同步字段，用*T，避免复制造成锁操作无效。</li>
+<li>其他无法确定的情况，都用*T</li>
+</ul>
+<h3 id="匿名字段"><a href="#匿名字段" class="headerlink" title="匿名字段"></a>匿名字段</h3><p>可以像访问匿名字段成员那样调用其方法，由编译器负责查找。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> data <span class="keyword">struct</span> &#123;</span><br><span class="line">	sync.Mutex</span><br><span class="line">	buf [<span class="number">1024</span>]<span class="keyword">byte</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	d := data&#123;&#125;</span><br><span class="line">	d.Lock() <span class="comment">//编译器会处理为sycn.(*Mutex).Lock()  怎么有点断言的意思</span></span><br><span class="line">	<span class="keyword">defer</span> d.Unlock()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>方法也会有同名遮蔽问题。但是利用这种特性，可实现类似覆盖操作。尽管能直接访问匿名字段的成员和方法，但是它们依然不属于继承关系。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> user <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> manager <span class="keyword">struct</span> &#123;</span><br><span class="line">	user</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(user)</span> <span class="title">toString</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"user"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m manager)</span> <span class="title">toString</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> m.user.toString() + <span class="string">";manager"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> m manager</span><br><span class="line">	<span class="built_in">println</span>(m.toString())</span><br><span class="line">	<span class="built_in">println</span>(m.user.toString())</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// user;manager</span></span><br><span class="line"><span class="comment">// user</span></span><br></pre></td></tr></table></figure>
+<h3 id="方法集"><a href="#方法集" class="headerlink" title="方法集"></a>方法集</h3><p>类型有一个与之相关的方法集，这决定了它是否实现了某个接口。</p>
+<ul>
+<li>类型T方法集包含所有<code>receiver T</code>方法。</li>
+<li>类型<em>T方法集包含了所有<code>receiver T</code> + `</em>T`方法。</li>
+<li>匿名嵌入S，<code>T</code>方法集包含了所有<code>receiver S</code>方法。</li>
+<li>匿名嵌入<em>S，<code>T</code>方法集包含了所有<code>receiver S</code>+`</em>S`方法。</li>
+<li>匿名嵌入S或者<em>S,`</em>T<code>方法集合包含了所有</code>receiver S<code>+</code>*S`方法</li>
+</ul>
+<p>可以利用发射测试这些规则。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> S <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;</span><br><span class="line">	S</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(S)</span> <span class="title">sVal</span><span class="params">()</span></span>  &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*S)</span> <span class="title">sPtr</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">tVal</span><span class="params">()</span></span>  &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*T)</span> <span class="title">tPtr</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">methodSet</span><span class="params">(a <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">	t := reflect.TypeOf(a)</span><br><span class="line">	<span class="keyword">for</span> i, n := <span class="number">0</span>, t.NumMethod(); i &lt; n; i++ &#123;</span><br><span class="line">		m := t.Method(i)</span><br><span class="line">		fmt.Println(m.Name, m.Type)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> t T</span><br><span class="line">	methodSet(t)</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">"--------"</span>)</span><br><span class="line">	methodSet(&amp;t)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>方法集仅影响接口实现和方法表达式转换，与通过实例或者实例指针调用方法无关。实例并不使用方法集，而是直接调用（或通过隐式字段名）</p>
+<h3 id="表达式"><a href="#表达式" class="headerlink" title="表达式"></a>表达式</h3><p>方法和函数一样，除直接调用外，还可以赋值给变量，或作为参数传递。依照具体引用方式的不同，可分为expression 和 value 两种状态</p>
+<h4 id="Method-Expression"><a href="#Method-Expression" class="headerlink" title="Method Expression"></a>Method Expression</h4><p>通过类型引用的 method expression 会被还原为普通函数样式，receiver 是第一参数，调用时须显式传参。至于类型，可以是T或者*T,只要目标方法存在该类型方法集中即可。<br>//func (n N ) test() 这个底层会转成  func test(n N)</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> N <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n N)</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Printf(<span class="string">"test.n: %p, %d\n"</span>, &amp;n, n)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> n N = <span class="number">25</span></span><br><span class="line">	fmt.Printf(<span class="string">"main.n: %p, %d\n"</span>, &amp;n, n)</span><br><span class="line">	f1 := N.test <span class="comment">//把方法赋给f1  func(n N)   通过类型(N)引用的 method expression</span></span><br><span class="line">	f1(n)  <span class="comment">//receiver 是第一参数</span></span><br><span class="line">	f2 := (*N).test <span class="comment">// func(n *N)        通过类型(*N)引用的 method expression</span></span><br><span class="line">	f2(&amp;n)          <span class="comment">//传递指针   receiver 是第一参数</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// main.n: 0xc000080000, 25</span></span><br><span class="line"><span class="comment">// test.n: 0xc000080018, 25</span></span><br><span class="line"><span class="comment">// test.n: 0xc00008a000, 25</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>*T</code>是包含了所有<code>T</code>的方法集，所以上面这个例子中 test方法存在<code>*T</code>方法集中（只要目标方法存在该类型方法集中即可）<br>因此我们变更一下看看下面这个例子</p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> N <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *N)</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Printf(<span class="string">"test.n: %p, %d\n"</span>, n, *n)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> n N = <span class="number">25</span></span><br><span class="line">	fmt.Printf(<span class="string">"main.n: %p, %d\n"</span>, &amp;n, n)</span><br><span class="line">	f1 := N.test    <span class="comment">//把方法赋给f1  func(n N)   通过类型(N)引用的 method expression 目标方法test不在类型N的方法集中</span></span><br><span class="line">	f1(n)           <span class="comment">//receiver 是第一参数</span></span><br><span class="line">	f2 := (*N).test <span class="comment">// func(n *N)        通过类型(*N)引用的 method expression</span></span><br><span class="line">	f2(&amp;n)          <span class="comment">//传递指针   receiver 是第一参数</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//invalid method expression N.test (needs pointer receiver: (*N).test)</span></span><br><span class="line"><span class="comment">//目标方法test() 不在 `T`的方法集中，所以这样就不行</span></span><br></pre></td></tr></table></figure>
+<p>所以这里可以知道，在第一个例子中，尽管你用的是*N 你的receiver类型是指针，但是编译器会保证按原定义类型拷贝传值。(原定义类型是func (n N) test()),同理第二个例子肯定是地址一样的。<br>当然上面的代码也可以一步到位，直接以表达式的方式调用。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> N <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n N)</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Printf(<span class="string">"test.n: %p, %d\n"</span>, &amp;n, n)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> n N = <span class="number">25</span></span><br><span class="line">	fmt.Printf(<span class="string">"main.n: %p, %d\n"</span>, &amp;n, n)</span><br><span class="line">	N.test(n)</span><br><span class="line">	(*N).test(&amp;n)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// main.n: 0xc000018080, 25</span></span><br><span class="line"><span class="comment">// test.n: 0xc000018098, 25     </span></span><br><span class="line"><span class="comment">// test.n: 0xc000088000, 25</span></span><br></pre></td></tr></table></figure>
+<p>同理</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> N <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *N)</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Printf(<span class="string">"test.n: %p, %d\n"</span>, n, *n)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> n N = <span class="number">25</span></span><br><span class="line">	fmt.Printf(<span class="string">"main.n: %p, %d\n"</span>, &amp;n, n)</span><br><span class="line">	<span class="comment">//f2 := (*N).test // func(n *N)        通过类型(*N)引用的 method expression</span></span><br><span class="line">	(*N).test(&amp;n) <span class="comment">//传递指针   receiver 是第一参数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Method-Value"><a href="#Method-Value" class="headerlink" title="Method Value"></a>Method Value</h4><p>基于<code>实例或者指针</code>引用的method value，参数签名不会改变，依旧按正常方式调用。但当method value 被赋值给变量或者作为参数传递时，会立即计算并复制该方法执行所需的 receiver 对象，与其绑定，以便在稍后执行时，能隐式的传入receiver参数</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> N <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n N)</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Printf(<span class="string">"test.n: %p, %v\n"</span>, &amp;n, n)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> n N = <span class="number">25</span></span><br><span class="line">	p := &amp;n</span><br><span class="line">	n++</span><br><span class="line">	f1 := n.test <span class="comment">//通过实例引用的method value 被赋值给变量 这里复制了n  直接等同于 func test()</span></span><br><span class="line">	n++</span><br><span class="line">	f2 := p.test <span class="comment">//通过指针引用method value 被赋值给变量 而这里复制了*p 所以是27 而不是28</span></span><br><span class="line">	n++</span><br><span class="line">	fmt.Printf(<span class="string">"main.n: %p, %v\n"</span>, p, n)</span><br><span class="line">	f1()</span><br><span class="line">	f2()</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// main.n: 0xc000090000, 28</span></span><br><span class="line"><span class="comment">// test.n: 0xc000090018, 26</span></span><br><span class="line"><span class="comment">// test.n: 0xc00007e008, 27</span></span><br></pre></td></tr></table></figure>
+<p>当method value 作为参数时，会复制含receiver在内的整个method value。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> N <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n N)</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Printf(<span class="string">"test.n: %p, %v\n"</span>, &amp;n, n)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">call</span><span class="params">(m <span class="keyword">func</span>()</span>)</span> &#123;</span><br><span class="line">	m()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> n N = <span class="number">25</span></span><br><span class="line">	p := &amp;n</span><br><span class="line">	fmt.Printf(<span class="string">"main.n: %p, %v\n"</span>, p, n)</span><br><span class="line"></span><br><span class="line">	n++</span><br><span class="line">	call(n.test)</span><br><span class="line"></span><br><span class="line">	n++</span><br><span class="line">	call(p.test)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// main.n: 0xc000082000, 25</span></span><br><span class="line"><span class="comment">// test.n: 0xc000082018, 26</span></span><br><span class="line"><span class="comment">// test.n: 0xc00008c000, 27</span></span><br></pre></td></tr></table></figure>
+<p>我们把 receiver类型改成指针，那么复制的仅是指针了</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> N <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n *N)</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Printf(<span class="string">"test.n: %p, %v\n"</span>, n, *n)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> n N = <span class="number">25</span></span><br><span class="line">	p := &amp;n</span><br><span class="line"></span><br><span class="line">	n++</span><br><span class="line">	f1 := n.test</span><br><span class="line"></span><br><span class="line">	n++</span><br><span class="line">	f2 := p.test</span><br><span class="line"></span><br><span class="line">	n++</span><br><span class="line">	fmt.Printf(<span class="string">"main.n: %p, %v\n"</span>, p, n)</span><br><span class="line"></span><br><span class="line">	f1()</span><br><span class="line">	f2()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// main.n: 0xc000018078, 28</span></span><br><span class="line"><span class="comment">// test.n: 0xc000018078, 28</span></span><br><span class="line"><span class="comment">// test.n: 0xc000018078, 28</span></span><br></pre></td></tr></table></figure>
+<p>只要 receiver 参数类型正确，使用nil同样可以执行</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> N <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(n N)</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fmt.Printf(<span class="string">"test.n: %p, %v\n"</span>, &amp;n, n)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*N)</span> <span class="title">pointer</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">//fmt.Printf("point.n: %p, %v\n", n, *n)</span></span><br><span class="line">	<span class="built_in">println</span>(<span class="string">"===="</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> a *N</span><br><span class="line">	<span class="keyword">var</span> b N</span><br><span class="line">	a.pointer()</span><br><span class="line">	(*N)(<span class="literal">nil</span>).pointer()</span><br><span class="line">	(*N).pointer(<span class="literal">nil</span>)</span><br><span class="line">	N.test(b)</span><br><span class="line">&#125;</span><br><span class="line">====</span><br><span class="line">====</span><br><span class="line">====</span><br><span class="line">test.n: <span class="number">0xc00008a000</span>, <span class="number">0</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://devying.github.io/2018/05/19/golang%E6%96%B9%E6%B3%95/" title="golang 方法总结" target="_blank" rel="external">https://devying.github.io/2018/05/19/golang%E6%96%B9%E6%B3%95/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/Devying" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpeg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/Devying" target="_blank"><span class="text-dark">熠熙轻雷</span><small class="ml-1x">后端开发 &amp; 架构设计 &amp; 基础服务</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2018/05/28/golang%E6%8E%A5%E5%8F%A3/" title="golang 接口总结"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" title="golang 结构体总结"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn" data-toggle="collapse" href="#collapseToc" aria-expanded="true" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 Devying
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '84d8f62d55a4bdb03aeb',
+    clientSecret: '6017014466b014f691ad29f7d89843f85cdb0161',
+    repo: 'devying.github.io',
+    owner: 'Devying',
+    admin: ['Devying'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>

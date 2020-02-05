@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://devying.github.io/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/</loc>
-    <lastmod>2019-11-17</lastmod>
+    <loc>https://devying.github.io/2018/05/28/golang%E6%8E%A5%E5%8F%A3/</loc>
+    <lastmod>2020-02-05</lastmod>
+  </url>  <url>
+    <loc>https://devying.github.io/2018/05/19/golang%E6%96%B9%E6%B3%95/</loc>
+    <lastmod>2020-02-05</lastmod>
   </url>  <url>
     <loc>https://devying.github.io/2018/03/25/golangmap/</loc>
+    <lastmod>2019-11-21</lastmod>
+  </url>  <url>
+    <loc>https://devying.github.io/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/</loc>
     <lastmod>2019-11-17</lastmod>
   </url>  <url>
     <loc>https://devying.github.io/2018/03/10/golang%E5%88%87%E7%89%87/</loc>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#34495e000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>golang 接口总结 | 熠熙轻雷</title>
+  <meta name="description" content="定义接口代表一种调用契约，是多个方法声明的集合从内部看接口本身也是一种结构类型，只是编译器会对其作出很多限制。  不能有字段 不能定义自己的方法 只能声明方法不能实现 可嵌入其他接口类型接口通常以er作为名称后缀，方法名是声明组成部分，但是参数可不同或者省略。123456789101112131415161718192021222324type tester interface &amp;#123;	te">
+<meta name="keywords" content="golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang 接口总结">
+<meta property="og:url" content="https:&#x2F;&#x2F;devying.github.io&#x2F;2018&#x2F;05&#x2F;28&#x2F;golang%E6%8E%A5%E5%8F%A3&#x2F;index.html">
+<meta property="og:site_name" content="熠熙轻雷">
+<meta property="og:description" content="定义接口代表一种调用契约，是多个方法声明的集合从内部看接口本身也是一种结构类型，只是编译器会对其作出很多限制。  不能有字段 不能定义自己的方法 只能声明方法不能实现 可嵌入其他接口类型接口通常以er作为名称后缀，方法名是声明组成部分，但是参数可不同或者省略。123456789101112131415161718192021222324type tester interface &amp;#123;	te">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-02-05T09:44:53.932Z">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://devying.github.io/2018/05/28/golang%E6%8E%A5%E5%8F%A3/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="熠熙轻雷" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/Devying" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpeg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">熠熙轻雷</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">后端开发 &amp; 架构设计 &amp; 基础服务</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>后端开发交流!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/golang/">golang</a><span class="category-list-count">9</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a><span class="tag-list-count">9</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/golang/" style="font-size: 13px;">golang</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/05/28/golang%E6%8E%A5%E5%8F%A3/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/05/28/golang%E6%8E%A5%E5%8F%A3/" class="title">golang 接口总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-05-28T08:13:11.000Z" itemprop="datePublished">2018-05-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/05/19/golang%E6%96%B9%E6%B3%95/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/05/19/golang%E6%96%B9%E6%B3%95/" class="title">golang 方法总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-05-19T07:23:02.000Z" itemprop="datePublished">2018-05-19</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/04/19/golang%E7%BB%93%E6%9E%84%E4%BD%93/" class="title">golang 结构体总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-04-18T16:23:02.000Z" itemprop="datePublished">2018-04-19</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/03/25/golangmap/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/03/25/golangmap/" class="title">golang map总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-03-24T16:23:02.000Z" itemprop="datePublished">2018-03-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/03/10/golang%E5%88%87%E7%89%87/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/03/10/golang%E5%88%87%E7%89%87/" class="title">golang切片总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-03-09T16:23:02.000Z" itemprop="datePublished">2018-03-10</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse in" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#定义"><span class="toc-number">1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#执行机制"><span class="toc-number">2.</span> <span class="toc-text">执行机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#类型转换"><span class="toc-number">3.</span> <span class="toc-text">类型转换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#技巧"><span class="toc-number">4.</span> <span class="toc-text">技巧</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <!-- <link rel="stylesheet"
+      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/atom-one-dark.min.css">
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> -->
+<div class="content">
+  <article id="post-golang接口" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      golang 接口总结
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2018/05/28/golang%E6%8E%A5%E5%8F%A3/" class="article-date">
+	  <time datetime="2018-05-28T08:13:11.000Z" itemprop="datePublished">2018-05-28</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/golang/">golang</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/golang/" rel="tag">golang</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2018/05/28/golang%E6%8E%A5%E5%8F%A3/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>接口代表一种调用契约，是多个方法声明的集合<br>从内部看接口本身也是一种结构类型，只是编译器会对其作出很多限制。</p>
+<ul>
+<li>不能有字段</li>
+<li>不能定义自己的方法</li>
+<li>只能声明方法不能实现</li>
+<li>可嵌入其他接口类型<br>接口通常以er作为名称后缀，方法名是声明组成部分，但是参数可不同或者省略。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> tester <span class="keyword">interface</span> &#123;</span><br><span class="line">	test()</span><br><span class="line">	<span class="keyword">string</span>() <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> data <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*data)</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(data)</span> <span class="title">string</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"+OK"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> d data</span><br><span class="line">	<span class="comment">//var t tester = d</span></span><br><span class="line">	<span class="comment">//cannot use d (type data) as type tester in assignment:</span></span><br><span class="line">	<span class="comment">//data does not implement tester (test method has pointer receiver)</span></span><br><span class="line">	<span class="keyword">var</span> t tester = &amp;d</span><br><span class="line">	<span class="built_in">println</span>(t.<span class="keyword">string</span>())</span><br><span class="line">&#125;</span><br><span class="line">很明显我们根据上一章的内容知道 *T的方法集中包含了所有T的方法集</span><br></pre></td></tr></table></figure>
+如何接口没有任何方法声明，那么就是一个空接口(interface{}),它的用途类似于面向对象里面的根类型Object，可被赋值为任何类型的对象。<br>接口变量默认值是nil。如果实现接口的类型支持，可做相等运算。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> t1, t2 <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">	<span class="built_in">println</span>(t1 == <span class="literal">nil</span>, t1 == t2) <span class="comment">//true true</span></span><br><span class="line">	t1, t2 = <span class="number">100</span>, <span class="number">100</span></span><br><span class="line">	<span class="built_in">println</span>(t1 == t2) <span class="comment">//true</span></span><br><span class="line">	t1, t2 = <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>&#123;&#125;, <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>&#123;&#125;</span><br><span class="line">	<span class="built_in">println</span>(t1 == t2)</span><br><span class="line">	<span class="comment">//panic: runtime error: comparing uncomparable type map[string]int</span></span><br></pre></td></tr></table></figure>
+可以像匿名字段那样，嵌入其他接口。目标类型方法集中必须拥有包含嵌入接口方法在内的全部方法才算是实现了该接口。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> stringer <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="keyword">string</span>() <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> tester <span class="keyword">interface</span> &#123;</span><br><span class="line">	stringer</span><br><span class="line">	test()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> data <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*data)</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(data)</span> <span class="title">string</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"+OK"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> d data</span><br><span class="line">	<span class="keyword">var</span> t tester = &amp;d</span><br><span class="line">	t.test()</span><br><span class="line">	<span class="built_in">println</span>(t.<span class="keyword">string</span>())</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//+OK</span></span><br></pre></td></tr></table></figure>
+超集接口变量可隐式转为子集，反过来不行<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> stringer <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="keyword">string</span>() <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> tester <span class="keyword">interface</span> &#123;</span><br><span class="line">	stringer</span><br><span class="line">	test()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> data <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*data)</span> <span class="title">test</span><span class="params">()</span></span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(data)</span> <span class="title">string</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"+OK"</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">pp</span><span class="params">(a stringer)</span></span> &#123;</span><br><span class="line">	<span class="built_in">println</span>(a.<span class="keyword">string</span>())</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> d data</span><br><span class="line">	<span class="keyword">var</span> t tester = &amp;d</span><br><span class="line">	pp(t)              <span class="comment">//隐式转换为子集接口</span></span><br><span class="line">	<span class="keyword">var</span> s stringer = t <span class="comment">//超集转换为子集</span></span><br><span class="line">	<span class="built_in">println</span>(s.<span class="keyword">string</span>())</span><br><span class="line">	<span class="comment">//var t2 tester = s //stringer does not implement tester (missing test method)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+支持匿名接口类型，可直接用于变量定义，或作为结构字段类型。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> data <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(data)</span> <span class="title">string</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"+OK"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> node <span class="keyword">struct</span> &#123;</span><br><span class="line">	i <span class="keyword">interface</span> &#123; <span class="comment">//作为结构体字段类型</span></span><br><span class="line">		<span class="keyword">string</span>() <span class="keyword">string</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> t <span class="keyword">interface</span> &#123;</span><br><span class="line">		<span class="keyword">string</span>() <span class="keyword">string</span></span><br><span class="line">	&#125; = data&#123;&#125; <span class="comment">//直接用于变量定义</span></span><br><span class="line">	n := node&#123;</span><br><span class="line">		i: t,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">println</span>(n.i.<span class="keyword">string</span>())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="执行机制"><a href="#执行机制" class="headerlink" title="执行机制"></a>执行机制</h2>接口使用一个名为itab的结构存储运行期间所需的相关类型信息<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">type</span> <span class="title">iface</span></span> <span class="class"><span class="keyword">struct</span>&#123;</span></span><br><span class="line">    tab *itab           <span class="comment">//类型信息</span></span><br><span class="line">    data <span class="keyword">unsafe</span>.Pointer <span class="comment">//实际对象指针</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">type</span> <span class="title">itab</span></span> <span class="class"><span class="keyword">struct</span>&#123;</span></span><br><span class="line">    inter *interfacetype <span class="comment">//接口类型</span></span><br><span class="line">    _<span class="keyword">type</span> *_<span class="keyword">type</span>        <span class="comment">//实际对象类型</span></span><br><span class="line">    fun [<span class="number">1</span>]uintptr      <span class="comment">//实际对象方法地址</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Ner <span class="keyword">interface</span> &#123;</span><br><span class="line">	a()</span><br><span class="line">	b(<span class="keyword">int</span>)</span><br><span class="line">	c(<span class="keyword">string</span>) <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> N <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(N)</span> <span class="title">a</span><span class="params">()</span></span>               &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*N)</span> <span class="title">b</span><span class="params">(<span class="keyword">int</span>)</span></span>           &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*N)</span> <span class="title">c</span><span class="params">(<span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123; <span class="keyword">return</span> <span class="string">"+OK"</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> n N</span><br><span class="line">	<span class="keyword">var</span> t Ner = &amp;n</span><br><span class="line">	t.a()</span><br><span class="line">	<span class="built_in">println</span>(t.c(<span class="string">""</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+另外接口还有一个重要特征：将对象复制给接口变量时，会复制该对象。并且我们甚至无法修改接口存储的复制品，因为它也是不可寻址的。<br>即便将其复制出来，用本地变量修改后，依然无法对iface.data 赋值。解决的办法就是将对象指针赋值给接口，那么接口内存储的就是指针的复制品。<br>我们来试试<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> data <span class="keyword">struct</span> &#123;</span><br><span class="line">	x <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	d := data&#123;<span class="number">100</span>&#125;</span><br><span class="line">	<span class="keyword">var</span> t <span class="keyword">interface</span>&#123;&#125; = d</span><br><span class="line">	<span class="built_in">println</span>(t.(data).x)</span><br><span class="line">	t.(data).x = <span class="number">20</span> <span class="comment">//cannot assign to t.(data).x</span></span><br><span class="line">	p := &amp;t.(data) <span class="comment">//cannot take the address of t.(data)</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> t1 <span class="keyword">interface</span>&#123;&#125; = &amp;d <span class="comment">//对象指针赋值给接口</span></span><br><span class="line">	<span class="built_in">println</span>(t1.(*data))   <span class="comment">//0xc000030728</span></span><br><span class="line">	t1.(*data).x = <span class="number">200</span></span><br><span class="line">	<span class="built_in">println</span>(t1.(*data).x)<span class="comment">//200</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+只有当接口变量 内部的两个指针<code>itab</code>和<code>data</code>都为nil时，接口才等于nil。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a <span class="keyword">interface</span>&#123;&#125; = <span class="literal">nil</span></span><br><span class="line"><span class="keyword">var</span> b <span class="keyword">interface</span>&#123;&#125; = (*<span class="keyword">int</span>)(<span class="literal">nil</span>)</span><br><span class="line"><span class="built_in">println</span>(a == <span class="literal">nil</span>, b == <span class="literal">nil</span>) <span class="comment">//true false</span></span><br><span class="line"></span><br><span class="line">(gdb) info locals</span><br><span class="line">b = &#123;_type = <span class="number">0x10557e0</span> &lt;<span class="keyword">type</span>.*+<span class="number">27744</span>&gt;, data = <span class="number">0x0</span>&#125;</span><br><span class="line">a = &#123;_type = <span class="number">0x0</span>, data = <span class="number">0x0</span>&#125;</span><br></pre></td></tr></table></figure>
+也正是这样会有一个容易被忽视的错误。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> TestError <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*TestError)</span> <span class="title">Error</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"error"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">abc</span><span class="params">(x <span class="keyword">int</span>)</span> <span class="params">(<span class="keyword">int</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> err *TestError</span><br><span class="line">	<span class="keyword">if</span> x &lt; <span class="number">0</span> &#123;</span><br><span class="line">		err = <span class="built_in">new</span>(TestError)</span><br><span class="line">		x = <span class="number">0</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		x += <span class="number">100</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> x, err <span class="comment">//这里这个err 是有类型的 所以你用err != nil 问题就出现了</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	x, err := test(<span class="number">100</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err) <span class="comment">//</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">println</span>(x)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h2>类型推断可以将变量还原为原始类型，或用来判定是否实现了某个更具体的接口类型。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> data <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d data)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> fmt.Sprintf(<span class="string">"data:%d"</span>, d)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> d data = <span class="number">15</span></span><br><span class="line">	<span class="keyword">var</span> x <span class="keyword">interface</span>&#123;&#125; = d</span><br><span class="line">	<span class="keyword">if</span> n, ok := x.(fmt.Stringer); ok &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"%#v\n"</span>, n) <span class="comment">//15</span></span><br><span class="line">		fmt.Println(n)         <span class="comment">//data:15</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> d2, ok := x.(data); ok &#123;</span><br><span class="line">		fmt.Printf(<span class="string">"%#v\n"</span>, d2) <span class="comment">//15</span></span><br><span class="line">		fmt.Println(d2)         <span class="comment">//data:15</span></span><br><span class="line">	&#125;</span><br><span class="line">	e := x.(error) <span class="comment">//panic: interface conversion: main.data is not error: missing method Error</span></span><br><span class="line">	<span class="built_in">println</span>(e)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+另外我们还可以用switch语句在多种类型间做出推断匹配。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> y <span class="keyword">interface</span>&#123;&#125; = <span class="function"><span class="keyword">func</span><span class="params">(x <span class="keyword">int</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">		<span class="keyword">return</span> fmt.Sprintf(<span class="string">"d:%d"</span>, x)</span><br><span class="line">	&#125;</span><br><span class="line"><span class="keyword">switch</span> v := y.(<span class="keyword">type</span>) &#123;</span><br><span class="line"><span class="keyword">case</span> <span class="literal">nil</span>:</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">"nil"</span>)</span><br><span class="line"><span class="keyword">case</span> *<span class="keyword">int</span>:</span><br><span class="line">	<span class="built_in">println</span>(*v)</span><br><span class="line"><span class="keyword">case</span> <span class="function"><span class="keyword">func</span><span class="params">(<span class="keyword">int</span>)</span> <span class="title">string</span>:</span></span><br><span class="line">	<span class="built_in">println</span>(v(<span class="number">100</span>))</span><br><span class="line"><span class="keyword">case</span> fmt.Stringer:</span><br><span class="line">	fmt.Println(v)</span><br><span class="line"><span class="keyword">default</span>:</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">"unknow"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="技巧"><a href="#技巧" class="headerlink" title="技巧"></a>技巧</h2>让编译器检查，确保类型实现了指定接口。<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> x int</span><br><span class="line"></span><br><span class="line">func init() <span class="comment">&#123;</span></span><br><span class="line"><span class="comment">	var _ fmt.Stringer = x(0)</span></span><br><span class="line"><span class="comment">&#125;</span></span><br><span class="line"></span><br><span class="line">func main() <span class="comment">&#123;</span></span><br><span class="line"><span class="comment">	fmt.Println("===")</span></span><br><span class="line"><span class="comment">&#125;</span></span><br><span class="line"></span><br><span class="line">./<span class="keyword">in</span>.go:<span class="number">10</span>:<span class="number">6</span>: cannot use x(<span class="number">0</span>) (<span class="keyword">type</span> x) <span class="keyword">as</span> <span class="keyword">type</span> fmt.Stringer <span class="keyword">in</span> assignment:</span><br><span class="line">        x does <span class="keyword">not</span> implement fmt.Stringer (missing String <span class="function"><span class="keyword">method</span>)</span></span><br></pre></td></tr></table></figure>
+定义函数类型，让相同签名的函数自动实现某个接口<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> FuncString <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">string</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f FuncString)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> f()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> t fmt.Stringer = FuncString(<span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="string">"hello boy"</span></span><br><span class="line">	&#125;)</span><br><span class="line">	fmt.Println(t)</span><br><span class="line">	fmt.Println(<span class="string">"==="</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">hello boy</span><br><span class="line">===</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+</li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://devying.github.io/2018/05/28/golang%E6%8E%A5%E5%8F%A3/" title="golang 接口总结" target="_blank" rel="external">https://devying.github.io/2018/05/28/golang%E6%8E%A5%E5%8F%A3/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/Devying" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpeg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/Devying" target="_blank"><span class="text-dark">熠熙轻雷</span><small class="ml-1x">后端开发 &amp; 架构设计 &amp; 基础服务</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="/2018/05/19/golang%E6%96%B9%E6%B3%95/" title="golang 方法总结"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn" data-toggle="collapse" href="#collapseToc" aria-expanded="true" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 Devying
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '84d8f62d55a4bdb03aeb',
+    clientSecret: '6017014466b014f691ad29f7d89843f85cdb0161',
+    repo: 'devying.github.io',
+    owner: 'Devying',
+    admin: ['Devying'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>
