@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://devying.github.io/2018/04/30/golang%E9%80%9A%E9%81%93/</loc>
+    <lastmod>2020-03-23</lastmod>
+  </url>  <url>
+    <loc>https://devying.github.io/2018/01/13/golang%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/</loc>
+    <lastmod>2020-03-16</lastmod>
+  </url>  <url>
+    <loc>https://devying.github.io/2020/02/06/golang%E5%8F%8D%E5%B0%84/</loc>
+    <lastmod>2020-02-06</lastmod>
+  </url>  <url>
+    <loc>https://devying.github.io/2018/06/03/golang%E5%B9%B6%E5%8F%91%E5%92%8C%E9%80%9A%E9%81%93/</loc>
+    <lastmod>2020-02-06</lastmod>
+  </url>  <url>
     <loc>https://devying.github.io/2018/05/28/golang%E6%8E%A5%E5%8F%A3/</loc>
     <lastmod>2020-02-05</lastmod>
   </url>  <url>
@@ -23,9 +35,6 @@
     <lastmod>2019-11-17</lastmod>
   </url>  <url>
     <loc>https://devying.github.io/2018/02/03/golang%E5%AD%97%E7%AC%A6%E4%B8%B2/</loc>
-    <lastmod>2019-11-17</lastmod>
-  </url>  <url>
-    <loc>https://devying.github.io/2018/01/13/golang%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%80%BB%E7%BB%93/</loc>
     <lastmod>2019-11-17</lastmod>
   </url>
 </urlset>

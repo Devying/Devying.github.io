@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#34495e000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>golang并发和通道 | 熠熙轻雷</title>
+  <meta name="description" content="单向尽管可以用make 创建单向通道，但那没有任何意义。通常使用类型转换来获取单向通道，并分别赋予操作双方 12345678910111213141516171819202122232425262728293031func main() &amp;#123;	var wg sync.WaitGroup	wg.Add(2)	c := make(chan int)	var send chan&amp;lt;- int">
+<meta name="keywords" content="golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang并发和通道">
+<meta property="og:url" content="https:&#x2F;&#x2F;devying.github.io&#x2F;2018&#x2F;06&#x2F;03&#x2F;golang%E5%B9%B6%E5%8F%91%E5%92%8C%E9%80%9A%E9%81%93&#x2F;index.html">
+<meta property="og:site_name" content="熠熙轻雷">
+<meta property="og:description" content="单向尽管可以用make 创建单向通道，但那没有任何意义。通常使用类型转换来获取单向通道，并分别赋予操作双方 12345678910111213141516171819202122232425262728293031func main() &amp;#123;	var wg sync.WaitGroup	wg.Add(2)	c := make(chan int)	var send chan&amp;lt;- int">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-02-06T06:23:05.536Z">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://devying.github.io/2018/06/03/golang%E5%B9%B6%E5%8F%91%E5%92%8C%E9%80%9A%E9%81%93/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="熠熙轻雷" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/Devying" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpeg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">熠熙轻雷</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">后端开发 &amp; 架构设计 &amp; 基础服务</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>后端开发交流!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/golang/">golang</a><span class="category-list-count">11</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a><span class="tag-list-count">11</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/golang/" style="font-size: 13px;">golang</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2020/02/06/golang%E5%8F%8D%E5%B0%84/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/02/06/golang%E5%8F%8D%E5%B0%84/" class="title">golang反射</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-02-06T06:21:21.947Z" itemprop="datePublished">2020-02-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/06/03/golang%E5%B9%B6%E5%8F%91%E5%92%8C%E9%80%9A%E9%81%93/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/06/03/golang%E5%B9%B6%E5%8F%91%E5%92%8C%E9%80%9A%E9%81%93/" class="title">golang并发和通道</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-06-03T12:23:02.000Z" itemprop="datePublished">2018-06-03</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/05/28/golang%E6%8E%A5%E5%8F%A3/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/05/28/golang%E6%8E%A5%E5%8F%A3/" class="title">golang 接口总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-05-28T08:13:11.000Z" itemprop="datePublished">2018-05-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/05/19/golang%E6%96%B9%E6%B3%95/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/05/19/golang%E6%96%B9%E6%B3%95/" class="title">golang 方法总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-05-19T07:23:02.000Z" itemprop="datePublished">2018-05-19</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="/2018/04/30/golang%E9%80%9A%E9%81%93/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/golang/">golang</a>
+              </p>
+              <p class="item-title">
+                <a href="/2018/04/30/golang%E9%80%9A%E9%81%93/" class="title">golang 通道</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-04-29T16:23:02.000Z" itemprop="datePublished">2018-04-30</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse in" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#单向"><span class="toc-number">1.</span> <span class="toc-text">单向</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#模式"><span class="toc-number">1.1.</span> <span class="toc-text">模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#性能"><span class="toc-number">1.2.</span> <span class="toc-text">性能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#资源泄露"><span class="toc-number">1.3.</span> <span class="toc-text">资源泄露</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#同步"><span class="toc-number">2.</span> <span class="toc-text">同步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#导入包"><span class="toc-number">3.</span> <span class="toc-text">导入包</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <!-- <link rel="stylesheet"
+      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/atom-one-dark.min.css">
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> -->
+<div class="content">
+  <article id="post-golang并发和通道" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      golang并发和通道
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2018/06/03/golang%E5%B9%B6%E5%8F%91%E5%92%8C%E9%80%9A%E9%81%93/" class="article-date">
+	  <time datetime="2018-06-03T12:23:02.000Z" itemprop="datePublished">2018-06-03</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/golang/">golang</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/golang/" rel="tag">golang</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2018/06/03/golang%E5%B9%B6%E5%8F%91%E5%92%8C%E9%80%9A%E9%81%93/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="单向"><a href="#单向" class="headerlink" title="单向"></a>单向</h2><p>尽管可以用make 创建单向通道，但那没有任何意义。通常使用类型转换来获取单向通道，并分别赋予操作双方</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	wg.Add(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">	c := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">	<span class="keyword">var</span> send <span class="keyword">chan</span>&lt;- <span class="keyword">int</span> = c</span><br><span class="line">	<span class="keyword">var</span> recv &lt;-<span class="keyword">chan</span> <span class="keyword">int</span> = c</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> wg.Done()</span><br><span class="line">		<span class="keyword">for</span> x := <span class="keyword">range</span> recv &#123;</span><br><span class="line">			<span class="built_in">println</span>(<span class="string">"recv:"</span>, x)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> wg.Done()</span><br><span class="line">		<span class="keyword">defer</span> <span class="built_in">close</span>(c)</span><br><span class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">3</span>; i++ &#123;</span><br><span class="line">			<span class="built_in">println</span>(<span class="string">"send:"</span>, i)</span><br><span class="line">			send &lt;- i</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">send: <span class="number">0</span></span><br><span class="line">send: <span class="number">1</span></span><br><span class="line">recv: <span class="number">0</span></span><br><span class="line">recv: <span class="number">1</span></span><br><span class="line">send: <span class="number">2</span></span><br><span class="line">recv: <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p>不能再单向通道上做逆向操作，同理不能close出通道，无法将单向通道转为双向的。<br>通道关闭后<br>&lt;-chan 就会解除阻塞<br>for range 也会结束<br>for {<br>     v,ok := &lt;-chan<br>}<br>ok 会返回false。</p>
+<p>一次性事件用close效率更好，没有多余开销。连续或多样性事件，可传递不同数据标志实现。还可使用sync.Cond实现单播或者广播事件。<br>处理多个通道可以用select随机选择</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    wg.Add(<span class="number">2</span>)</span><br><span class="line">    a, b := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>), <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> wg.Done()</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">var</span> (</span><br><span class="line">                name <span class="keyword">string</span></span><br><span class="line">                x    <span class="keyword">int</span></span><br><span class="line">                ok   <span class="keyword">bool</span></span><br><span class="line">            )</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> x, ok = &lt;-a:</span><br><span class="line">                name = <span class="string">"a"</span></span><br><span class="line">            <span class="keyword">case</span> x, ok = &lt;-b:</span><br><span class="line">                name = <span class="string">"b"</span></span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> !ok &#123; <span class="comment">//如果有任一通道关闭就终止</span></span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="built_in">println</span>(name, x)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> wg.Done()</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(a)</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(b)</span><br><span class="line">        <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123; <span class="comment">//随机选择通道发送</span></span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> a &lt;- i:</span><br><span class="line">            <span class="keyword">case</span> b &lt;- i * <span class="number">10</span>:</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于closed 或者 nil 通道。发送和接收操作都有相应的规则：<br>注意一点无论收发，nil通道都会阻塞。而关闭或者重复关闭nil通道都会panic。<br>如果要等全部通道消息处理结束，可以将已完成的通道设为nil。这样它就会被阻塞，不再被select选中。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    wg.Add(<span class="number">3</span>)</span><br><span class="line">    a, b := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>), <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> wg.Done()</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> x, ok := &lt;-a:</span><br><span class="line">                <span class="keyword">if</span> !ok &#123;</span><br><span class="line">                    a = <span class="literal">nil</span></span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="built_in">println</span>(<span class="string">"a"</span>, x)</span><br><span class="line">            <span class="keyword">case</span> x, ok := &lt;-b:</span><br><span class="line">                <span class="keyword">if</span> !ok &#123;</span><br><span class="line">                    b = <span class="literal">nil</span></span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="built_in">println</span>(<span class="string">"b"</span>, x)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> a == <span class="literal">nil</span> &amp;&amp; b == <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> wg.Done()</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(a)</span><br><span class="line">        <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">            a &lt;- i</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">defer</span> wg.Done()</span><br><span class="line">        <span class="keyword">defer</span> <span class="built_in">close</span>(b)</span><br><span class="line">        <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ &#123;</span><br><span class="line">            b &lt;- i * <span class="number">10</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    wg.Wait()</span><br><span class="line">&#125;</span><br><span class="line">a <span class="number">0</span></span><br><span class="line">b <span class="number">0</span></span><br><span class="line">a <span class="number">1</span></span><br><span class="line">a <span class="number">2</span></span><br><span class="line">a <span class="number">3</span></span><br><span class="line">b <span class="number">10</span></span><br><span class="line">b <span class="number">20</span></span><br><span class="line">b <span class="number">30</span></span><br><span class="line">a <span class="number">4</span></span><br><span class="line">a <span class="number">5</span></span><br><span class="line">a <span class="number">6</span></span><br><span class="line">b <span class="number">40</span></span><br><span class="line">a <span class="number">7</span></span><br><span class="line">a <span class="number">8</span></span><br><span class="line">a <span class="number">9</span></span><br></pre></td></tr></table></figure>
+<p>即便是同一个通道select 也可以随机选择case。<br>当所有通道都不可用时，select会执行default语句。</p>
+<h3 id="模式"><a href="#模式" class="headerlink" title="模式"></a>模式</h3><p>通常使用工厂方法将goroutine和通道绑定</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> receiver <span class="keyword">struct</span> &#123;</span><br><span class="line">	sync.WaitGroup</span><br><span class="line">	data <span class="keyword">chan</span> <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newReceiver</span><span class="params">()</span> *<span class="title">receiver</span></span> &#123;</span><br><span class="line">	r := &amp;receiver&#123;</span><br><span class="line">		data: <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>),</span><br><span class="line">	&#125;</span><br><span class="line">	r.Add(<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> r.Done()</span><br><span class="line">		<span class="keyword">for</span> x := <span class="keyword">range</span> r.data &#123;</span><br><span class="line">			<span class="built_in">println</span>(<span class="string">"recv:"</span>, x)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	<span class="keyword">return</span> r</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	r := newReceiver()</span><br><span class="line">	r.data &lt;- <span class="number">1</span></span><br><span class="line">	r.data &lt;- <span class="number">2</span></span><br><span class="line">	<span class="built_in">close</span>(r.data)</span><br><span class="line">	r.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>鉴于通道本身就是一个并发安全的队列，可作为ID generator、Pool 等用途</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> pool <span class="keyword">chan</span> []<span class="keyword">byte</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newPool</span><span class="params">(<span class="built_in">cap</span> <span class="keyword">int</span>)</span> <span class="title">pool</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">make</span>(<span class="keyword">chan</span> []<span class="keyword">byte</span>, <span class="built_in">cap</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p pool)</span> <span class="title">get</span><span class="params">()</span> []<span class="title">byte</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> v []<span class="keyword">byte</span></span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> v = &lt;-p:</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		v = <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">10</span>) <span class="comment">//Pool如果是空的那么就新建一个</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> v</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p pool)</span> <span class="title">put</span><span class="params">(b []<span class="keyword">byte</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> p &lt;- b: <span class="comment">//用完后放回去</span></span><br><span class="line">	<span class="keyword">default</span>: <span class="comment">//Pool满了直接丢去</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	pl := newPool(<span class="number">12</span>) <span class="comment">//大小为12</span></span><br><span class="line">	v := pl.get()</span><br><span class="line">	<span class="comment">//使用这个v</span></span><br><span class="line">	pl.put(v)</span><br><span class="line">	<span class="comment">//放回这个v</span></span><br><span class="line">	fmt.Println(pl)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>捕获信号</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> exits = &amp;<span class="keyword">struct</span> &#123;</span><br><span class="line">	sync.RWMutex</span><br><span class="line">	funcs   []<span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line">	signals <span class="keyword">chan</span> os.Signal</span><br><span class="line">&#125;&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">atexit</span><span class="params">(f <span class="keyword">func</span>()</span>)</span> &#123;</span><br><span class="line">	exits.Lock()</span><br><span class="line">	<span class="keyword">defer</span> exits.Unlock()</span><br><span class="line">	exits.funcs = <span class="built_in">append</span>(exits.funcs, f)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">waitExit</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> exits.signals == <span class="literal">nil</span> &#123;</span><br><span class="line">		exits.signals = <span class="built_in">make</span>(<span class="keyword">chan</span> os.Signal)</span><br><span class="line">		signal.Notify(exits.signals, syscall.SIGINT, syscall.SIGTERM)</span><br><span class="line">	&#125;</span><br><span class="line">	exits.RLock()</span><br><span class="line">	<span class="keyword">for</span> _, f := <span class="keyword">range</span> exits.funcs &#123;</span><br><span class="line">		<span class="keyword">defer</span> f()</span><br><span class="line">	&#125;</span><br><span class="line">	exits.RLock()</span><br><span class="line">	&lt;-exits.signals</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	atexit(<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123; <span class="built_in">println</span>(<span class="string">"exit 1 ----&gt;"</span>) &#125;)</span><br><span class="line">	atexit(<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123; <span class="built_in">println</span>(<span class="string">"exit 2 ----&gt;"</span>) &#125;)</span><br><span class="line">	waitExit()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">^Cexit <span class="number">2</span> ----&gt;</span><br><span class="line">exit <span class="number">1</span> ----&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h3><p>将发往通道的数据打包，减少传输次数，可有效提升性能。从实现上来说，通道队列依旧使用锁同步机制，单词获取更多数据（批处理），可改善因频繁加锁造成的性能问题。<br>我们可以使用数组对数据打包（把数据放进数组里面，然后只需要进一次通道就OK，如果用切片的话，会造成更多内存分配次数，如果数据多了）</p>
+<h3 id="资源泄露"><a href="#资源泄露" class="headerlink" title="资源泄露"></a>资源泄露</h3><p>防止通道阻塞问题</p>
+<h2 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h2><p>将Mutex作为匿名字段时，相关方法必须实现为 pointer-recerver,否则会因复制导致锁机制失效。<br>下面这个例子中 读写都是成对出现的，也就是说锁失效了。所以把方法接受者改成*T就OK了</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> data <span class="keyword">struct</span> &#123;</span><br><span class="line">	sync.Mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d *data)</span> <span class="title">test</span><span class="params">(s <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">	d.Lock()</span><br><span class="line">	<span class="keyword">defer</span> d.Unlock()</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">5</span>; i++ &#123;</span><br><span class="line">		<span class="built_in">println</span>(s, i)</span><br><span class="line">		time.Sleep(time.Second)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	wg.Add(<span class="number">2</span>)</span><br><span class="line">	<span class="comment">//var d *data = &amp;data&#123;&#125; 上下两个方式都可以</span></span><br><span class="line">	<span class="keyword">var</span> d data</span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> wg.Done()</span><br><span class="line">		d.test(<span class="string">"read"</span>)</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> wg.Done()</span><br><span class="line">		d.test(<span class="string">"write"</span>)</span><br><span class="line">	&#125;()</span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然我们也可以用嵌入*Mutex来避免复制问题。需要下面这么改下也可以。</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">type</span> <span class="keyword">data</span> struct &#123;</span></span><br><span class="line"><span class="class">	*<span class="title">sync</span>.<span class="type">Mutex</span></span></span><br><span class="line"><span class="class">&#125;</span></span><br><span class="line"><span class="title">var</span> d <span class="class"><span class="keyword">data</span> = <span class="keyword">data</span>&#123;<span class="title">new</span>(<span class="title">sync</span>.<span class="type">Mutex</span>)&#125;</span></span><br></pre></td></tr></table></figure>
+<p>应该将Mutex锁粒度控制在最小范围内，及早释放。所以别总是defer<br>Mutex不支持递归锁，即便是在同一 goroutine下也会导致死锁<br>func main(){<br>    var m sync.Mutex<br>    m.Lock()<br>    {<br>        m.Lock()<br>        m.Unlock()<br>    }<br>    m.Unlock()<br>}()<br>fatal error :all goroutines are asleep - deadlock!<br>建议：</p>
+<ul>
+<li>对性能要求高的，避免使用defer Unlock</li>
+<li>读写并发时，RWMutex 性能会更好</li>
+<li>对单个数据写保护，可尝试使用原子操作。</li>
+<li>执行严格测试，尽可能打开数据竞争检查。</li>
+</ul>
+<h2 id="导入包"><a href="#导入包" class="headerlink" title="导入包"></a>导入包</h2><p>导入方式有四种不同的方式</p>
+<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"github.com/foo/bar"</span>  默认方式:bar.A</span><br><span class="line"><span class="keyword">import</span> X <span class="string">"github.com/foo/bar"</span>  别名方式:X.A</span><br><span class="line"><span class="keyword">import</span> . <span class="string">"github.com/foo/bar"</span>  简便方式:A</span><br><span class="line"><span class="keyword">import</span> _ <span class="string">"github.com/foo/bar"</span>  初始化方式：无法引用，仅用来初始化目标包</span><br></pre></td></tr></table></figure>
+<p>简便方式常用于单元测试中，不推荐正式项目中使用。另外，初始化方式仅仅是为了让目标包的初始化函数得以执行，而非引用其成员。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://devying.github.io/2018/06/03/golang%E5%B9%B6%E5%8F%91%E5%92%8C%E9%80%9A%E9%81%93/" title="golang并发和通道" target="_blank" rel="external">https://devying.github.io/2018/06/03/golang%E5%B9%B6%E5%8F%91%E5%92%8C%E9%80%9A%E9%81%93/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/Devying" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpeg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/Devying" target="_blank"><span class="text-dark">熠熙轻雷</span><small class="ml-1x">后端开发 &amp; 架构设计 &amp; 基础服务</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/02/06/golang%E5%8F%8D%E5%B0%84/" title="golang反射"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2018/05/28/golang%E6%8E%A5%E5%8F%A3/" title="golang 接口总结"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn" data-toggle="collapse" href="#collapseToc" aria-expanded="true" title="文章目录" role="button">
+        <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Devying" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/3181212074" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 Devying
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '84d8f62d55a4bdb03aeb',
+    clientSecret: '6017014466b014f691ad29f7d89843f85cdb0161',
+    repo: 'devying.github.io',
+    owner: 'Devying',
+    admin: ['Devying'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>
